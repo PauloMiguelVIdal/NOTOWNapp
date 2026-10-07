@@ -1,9 +1,9 @@
-import React, { useState,useRef,useCallback,useEffect,useMemo } from "react"
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react"
 
 import MapWorld from "./MapWorldCity"
 
 import { defineHex, Grid, spiral } from 'honeycomb-grid'
-
+import { useNotownStore } from "../store/notownStore"
 export default function Central() {
   const [posicoes, setPosicoes] = useState({})
 
@@ -11,14 +11,15 @@ export default function Central() {
   const [moveMode, setMoveMode] = useState(false)
   const [hoveredKey, setHoveredKey] = useState(null)
 
+  const cidade = useNotownStore((s) => s.cidade)
+  const posicionarCarta = useNotownStore((s) => s.posicionarCartaPatrimonio)
 
-
-      const raioMapa = 4
-const HEX_SIZE = 0.6
-     const hexGrid = useMemo(() => {
-        const Tile = defineHex({ dimensions: HEX_SIZE, orientation: 'pointy' })
-        return Array.from(new Grid(Tile, spiral({ center: [0, 0], radius: raioMapa })))
-    }, [raioMapa])
+  const raioMapa = 4
+  const HEX_SIZE = 0.6
+  const hexGrid = useMemo(() => {
+    const Tile = defineHex({ dimensions: HEX_SIZE, orientation: 'pointy' })
+    return Array.from(new Grid(Tile, spiral({ center: [0, 0], radius: raioMapa })))
+  }, [raioMapa])
   const hexMap = useMemo(() => {
     const map = new Map()
     hexGrid.forEach((h) => map.set(`${h.q},${h.r}`, h))
@@ -27,17 +28,44 @@ const HEX_SIZE = 0.6
 
 
 
-const dados = {
-  agricultura:{
+  const dados = {
+    agricultura: {
 
+    }
   }
-}
 
-const SETORES = ['agricultura', 'tecnologia', 'comercio', 'industria', 'imobiliario', 'energia']
+  const SETORES = ['agricultura', 'tecnologia', 'comercio', 'industria', 'imobiliario', 'energia']
+
+  // const cartasPossuidas = useMemo(() => {
+  //   return Object.values(cartasCatalogo)
+  //     .map((carta) => {
+  //       const item = cartasInventario[carta.id]
+  //       const quantidade = item?.quantidade || 0
+  //       if (quantidade <= 0) return null
+  //       return {
+  //         id: carta.id,
+  //         nome: carta.nome,
+  //         raridade: carta.raridade,
+  //         setor: carta.setor,
+  //         quantidade,
+  //       }
+  //     })
+  //     .filter(Boolean)
+  // }, [cartasCatalogo, cartasInventario])
 
 
- const edificiosAtivos = useMemo(() => {
-    const lista = []
+
+  // edifício específico -> renderizar ele  
+
+  const edificioGenérico = {
+    id: 123,
+    nome: 'Plantação De Grãos',
+    setor: 'agricultura',
+    quantidade: 3,
+  }
+
+  const edificiosAtivos = useMemo(() => {
+    const lista = [edificioGenérico]
     SETORES.forEach(setor => {
       dados[setor]?.edificios?.forEach((ed, idx) => {
         if (ed.quantidade > 0) {
@@ -66,30 +94,30 @@ const SETORES = ['agricultura', 'tecnologia', 'comercio', 'industria', 'imobilia
   }, [edificiosAtivos])
 
 
-    const satelites = useMemo(() => {
-        const mapa = {}
-        Object.entries(posicoes).forEach(([key, id]) => {
-            const ed = edificioPorId.get(id)
-            if (!ed?.ehCluster) return
+  const satelites = useMemo(() => {
+    const mapa = {}
+    Object.entries(posicoes).forEach(([key, id]) => {
+      const ed = edificioPorId.get(id)
+      if (!ed?.ehCluster) return
 
-            const modeloId = EDIFICIO_PARA_MODELO[ed.nome]
-            const modeloDef = modeloId ? MODELOS[modeloId] : null
-            const defSats = modeloDef?.satelites || []
+      const modeloId = EDIFICIO_PARA_MODELO[ed.nome]
+      const modeloDef = modeloId ? MODELOS[modeloId] : null
+      const defSats = modeloDef?.satelites || []
 
-            const [q, r] = key.split(',').map(Number)
-            vizinhosDeHex(q, r).forEach((vk, i) => {
-                if (vk === '0,0') return
-                if (!posicoes[vk]) {
-                    mapa[vk] = {
-                        corTopo: undefined,
-                        corFallback: '#888888',
-                        modeloId: defSats[i]?.modeloId ?? null,
-                    }
-                }
-            })
-        })
-        return mapa
-    }, [posicoes, edificioPorId])
+      const [q, r] = key.split(',').map(Number)
+      vizinhosDeHex(q, r).forEach((vk, i) => {
+        if (vk === '0,0') return
+        if (!posicoes[vk]) {
+          mapa[vk] = {
+            corTopo: undefined,
+            corFallback: '#888888',
+            modeloId: defSats[i]?.modeloId ?? null,
+          }
+        }
+      })
+    })
+    return mapa
+  }, [posicoes, edificioPorId])
 
   // ─── Fullscreen + Loading ───
   const mapWrapperRef = useRef(null)
@@ -138,14 +166,14 @@ const SETORES = ['agricultura', 'tecnologia', 'comercio', 'industria', 'imobilia
       try {
         await el.requestFullscreen()
         if (screen.orientation?.lock) {
-          try { await screen.orientation.lock('landscape') } catch {}
+          try { await screen.orientation.lock('landscape') } catch { }
         }
       } catch (err) {
         console.error('Não foi possível entrar em tela cheia:', err)
       }
     } else {
       if (screen.orientation?.unlock) {
-        try { screen.orientation.unlock() } catch {}
+        try { screen.orientation.unlock() } catch { }
       }
       await document.exitFullscreen()
     }
@@ -195,15 +223,15 @@ const SETORES = ['agricultura', 'tecnologia', 'comercio', 'industria', 'imobilia
     if (!cartaId) return false
 
     // Persiste na store (o hook vai re-sincronizar)
-    // posicionarCarta(cartaId, destKey)
+    posicionarCarta(cartaId, destKey)
 
     setSelectedKey(destKey)
     setMoveMode(false)
     setHoveredKey(null)
     return true
   }, [selectedKey, posicoes, destinoEhValido,
-    //  posicionarCarta
-    ])
+     posicionarCarta
+  ])
 
   const handleHexClick = useCallback((hex) => {
     const key = `${hex.q},${hex.r}`
@@ -242,45 +270,45 @@ const SETORES = ['agricultura', 'tecnologia', 'comercio', 'industria', 'imobilia
 
 
 
-    const tilesToRender = useMemo(() => {
-        return hexGrid
-            .map((h) => ({ hex: h, key: `${h.q},${h.r}` }))
-            .filter(({ key }) => key !== '0,0' && !satelites[key])
-    }, [hexGrid, satelites])
+  const tilesToRender = useMemo(() => {
+    return hexGrid
+      .map((h) => ({ hex: h, key: `${h.q},${h.r}` }))
+      .filter(({ key }) => key !== '0,0' && !satelites[key])
+  }, [hexGrid, satelites])
 
 
 
-    return (
-        <div className="h-screen">
-            <MapWorld
-                // porte={porte}
-                edificiosAtivos={edificiosAtivos}
-                // posicoes={posicoes}
-                satelites={satelites}
-                tilesToRender={tilesToRender}
-                hexMap={hexMap}
-                edificioPorId={edificioPorId}
-                selectedKey={selectedKey}
-                moveMode={moveMode}
-                hoveredKey={hoveredKey}
-                isFullscreen={isFullscreen}
-                onHexClick={handleHexClick}
-                onHover={handleHover}
-                onMover={ativarMoveMode}
-                onCancelarMove={cancelarMoveMode}
-                onFecharPainel={fecharPainel}
-                onMapReady={handleMapReady}
+  return (
+    <div className="h-screen">
+      <MapWorld
+        // porte={porte}
+        edificiosAtivos={edificiosAtivos}
+        // posicoes={posicoes}
+        satelites={satelites}
+        tilesToRender={tilesToRender}
+        hexMap={hexMap}
+        edificioPorId={edificioPorId}
+        selectedKey={selectedKey}
+        moveMode={moveMode}
+        hoveredKey={hoveredKey}
+        isFullscreen={isFullscreen}
+        onHexClick={handleHexClick}
+        onHover={handleHover}
+        onMover={ativarMoveMode}
+        onCancelarMove={cancelarMoveMode}
+        onFecharPainel={fecharPainel}
+        onMapReady={handleMapReady}
 
-                // 🔥 Câmera da Cidade
-                cameraPosition={[-3.5, -5, -3.5]}
-                cameraFov={35}
-                cameraTarget={[0, 0, 0]}
-                minDistance={3}
-                maxDistance={22}
-                autoRotate={true}
-                dayProgress={0.4} />
-        </div>
-    )
+        // 🔥 Câmera da Cidade
+        cameraPosition={[-3.5, -5, -3.5]}
+        cameraFov={35}
+        cameraTarget={[0, 0, 0]}
+        minDistance={3}
+        maxDistance={22}
+        autoRotate={true}
+        dayProgress={0.4} />
+    </div>
+  )
 
 
 

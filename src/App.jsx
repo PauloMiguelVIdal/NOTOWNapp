@@ -11,8 +11,7 @@ function App() {
     <>
       <section className='h-screen'>
         <GraphicsConfigProvider>
-          <Central
-          >
+          <Central>
 
           </Central>
         </GraphicsConfigProvider>
