@@ -4,8 +4,8 @@ import MapWorld from "./MapWorldCity"
 
 import { defineHex, Grid, spiral } from 'honeycomb-grid'
 import { useNotownStore } from "../store/notownStore"
+import { object } from "motion/react-client"
 export default function Central() {
-  const [posicoes, setPosicoes] = useState({})
 
   const [selectedKey, setSelectedKey] = useState(null)
   const [moveMode, setMoveMode] = useState(false)
@@ -26,65 +26,52 @@ export default function Central() {
     return map
   }, [hexGrid])
 
+  const pastasArquivos = [
+    { nome:'Javascript',quantidade: 3 }, 
+    {nome:'Node', quantidade:2 }, 
+    { nome:'React',quantidade: 2 }, 
+    {nome: 'Next',quantidade: 1 },]
 
+// const edificiosAtivos = useMemo(() => {
+//   return pastasArquivos?.flatMap((pasta) =>
+//     Array.from({ length: pasta.quantidade }, (_, i) => ({
+//       id: `${pasta.nome}-${i}`,
+//       nome: pasta.nome,
+//       setor: 'tecnologia',
+//       quantidade: pasta.quantidade
+//     }))
+//   )
+// }, [pastasArquivos])
 
-  const dados = {
-    agricultura: {
-
+const edificiosAtivos = useMemo(() => {
+  return pastasArquivos?.map((pasta, i) =>
+    ({
+  
+      id: `${pasta.nome}-${i}`,
+      nome: pasta.nome,
+      setor: 'tecnologia',
+      quantidade: pasta.quantidade
     }
-  }
+    )
+  )
+  
+}, [pastasArquivos])
 
-  const SETORES = ['agricultura', 'tecnologia', 'comercio', 'industria', 'imobiliario', 'energia']
+  const posicoes = useMemo(() => {
+  const livres = hexGrid
+    .map(h => `${h.q},${h.r}`)
+    .filter(k => k !== '0,0')
 
-  // const cartasPossuidas = useMemo(() => {
-  //   return Object.values(cartasCatalogo)
-  //     .map((carta) => {
-  //       const item = cartasInventario[carta.id]
-  //       const quantidade = item?.quantidade || 0
-  //       if (quantidade <= 0) return null
-  //       return {
-  //         id: carta.id,
-  //         nome: carta.nome,
-  //         raridade: carta.raridade,
-  //         setor: carta.setor,
-  //         quantidade,
-  //       }
-  //     })
-  //     .filter(Boolean)
-  // }, [cartasCatalogo, cartasInventario])
+  const mapa = {}
+  edificiosAtivos.forEach((ed, i) => {
+    if (ed && livres[i]) mapa[livres[i]] = ed.id   
+  })
+  return mapa
+}, [hexGrid, edificiosAtivos])
 
-
-
-  // edifício específico -> renderizar ele  
-
-  const edificioGenérico = {
-    id: 123,
-    nome: 'Plantação De Grãos',
-    setor: 'agricultura',
-    quantidade: 3,
-  }
-
-  const edificiosAtivos = useMemo(() => {
-    const lista = [edificioGenérico]
-    SETORES.forEach(setor => {
-      dados[setor]?.edificios?.forEach((ed, idx) => {
-        if (ed.quantidade > 0) {
-          lista.push({
-            id: `${setor}-${idx}`,
-            nome: ed.nome,
-            setor,
-            quantidade: ed.quantidade,
-            ehCluster: edificioEhCluster(ed.nome),
-            ehComposto: edificioEhComposto(ed.nome),
-          })
-        }
-      })
-    })
-    return lista
-  }, [dados])
-
-
-
+// rerenderizando o mapa
+//dependendo cada um ele renderiza novamente
+//renderizando conforme a quantidade
 
 
   const edificioPorId = useMemo(() => {
@@ -93,6 +80,12 @@ export default function Central() {
     return map
   }, [edificiosAtivos])
 
+
+  useEffect(() => {
+  console.log('edificiosAtivos:', edificiosAtivos)
+  console.log('primeiro:', edificiosAtivos[0])
+  console.log('edificioPorId size:', edificioPorId.size)
+}, [edificiosAtivos, edificioPorId])
 
   const satelites = useMemo(() => {
     const mapa = {}
@@ -230,7 +223,7 @@ export default function Central() {
     setHoveredKey(null)
     return true
   }, [selectedKey, posicoes, destinoEhValido,
-     posicionarCarta
+    posicionarCarta
   ])
 
   const handleHexClick = useCallback((hex) => {
@@ -283,7 +276,8 @@ export default function Central() {
       <MapWorld
         // porte={porte}
         edificiosAtivos={edificiosAtivos}
-        // posicoes={posicoes}
+        posicoes={posicoes}
+
         satelites={satelites}
         tilesToRender={tilesToRender}
         hexMap={hexMap}

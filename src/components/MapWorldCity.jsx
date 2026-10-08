@@ -49,13 +49,13 @@ const edificioEhComposto = (() => {
 //  Config de setores
 // ─────────────────────────────────────────────────────────────
 const SETOR_CONFIG = {
-  agricultura:  { label: 'Agricultura', cor1: '#003816', cor3: '#0C9123', cor4: '#4CAF50' },
-  tecnologia:   { label: 'Tecnologia',  cor1: '#A64B00', cor3: '#FF6F00', cor4: '#FF8C42' },
-  industria:    { label: 'Indústria',   cor1: '#1A1A1A', cor3: '#808080', cor4: '#B3B3B3' },
-  comercio:     { label: 'Comércio',    cor1: '#660000', cor3: '#E60000', cor4: '#FF4D4D' },
-  imobiliario:  { label: 'Imobiliário', cor1: '#000066', cor3: '#3333CC', cor4: '#6666FF' },
-  energia:      { label: 'Energia',     cor1: '#665200', cor3: '#E6B800', cor4: '#FFD966' },
-  outros:       { label: 'Outros',      cor1: '#111111', cor3: '#555555', cor4: '#888888' },
+  agricultura: { label: 'Agricultura', cor1: '#003816', cor3: '#0C9123', cor4: '#4CAF50' },
+  tecnologia: { label: 'Tecnologia', cor1: '#A64B00', cor3: '#FF6F00', cor4: '#FF8C42' },
+  industria: { label: 'Indústria', cor1: '#1A1A1A', cor3: '#808080', cor4: '#B3B3B3' },
+  comercio: { label: 'Comércio', cor1: '#660000', cor3: '#E60000', cor4: '#FF4D4D' },
+  imobiliario: { label: 'Imobiliário', cor1: '#000066', cor3: '#3333CC', cor4: '#6666FF' },
+  energia: { label: 'Energia', cor1: '#665200', cor3: '#E6B800', cor4: '#FFD966' },
+  outros: { label: 'Outros', cor1: '#111111', cor3: '#555555', cor4: '#888888' },
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -63,10 +63,10 @@ const SETOR_CONFIG = {
 // ─────────────────────────────────────────────────────────────
 const SkyDome = React.memo(({ dayProgress }) => {
   const uniforms = useMemo(() => ({
-    topColor:    { value: new THREE.Color('#4c2da0') },
+    topColor: { value: new THREE.Color('#4c2da0') },
     middleColor: { value: new THREE.Color('#F27405') },
     bottomColor: { value: new THREE.Color('#6411D9') },
-    uProgress:   { value: 0 },
+    uProgress: { value: 0 },
   }), [])
 
   useEffect(() => { uniforms.uProgress.value = dayProgress }, [dayProgress, uniforms])
@@ -114,8 +114,8 @@ const SkyDome = React.memo(({ dayProgress }) => {
 const Ocean = React.memo(() => {
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uColorBase:   { value: new THREE.Color('#0066cc') },
-    uColorDeep:   { value: new THREE.Color('#001a33') },
+    uColorBase: { value: new THREE.Color('#0066cc') },
+    uColorDeep: { value: new THREE.Color('#001a33') },
   }), [])
 
   useFrame((state) => { uniforms.uTime.value = state.clock.elapsedTime })
@@ -172,7 +172,7 @@ const HexBase = React.memo(({
       const angle = (Math.PI / 3) * i + Math.PI / 6
       const v = HEX_SIZE * 1.015
       i === 0 ? s.moveTo(v * Math.cos(angle), v * Math.sin(angle))
-              : s.lineTo(v * Math.cos(angle), v * Math.sin(angle))
+        : s.lineTo(v * Math.cos(angle), v * Math.sin(angle))
     }
     s.closePath()
     return s
@@ -223,7 +223,21 @@ const HexTileClusterSatelite = React.memo(({ hex, corTopo, modeloId, corFallback
           posicaoBase={[0, 0.22, 0]}
           _overrideModeloId={modeloId}
           graphicsConfig={config}
-        />
+        >
+          <Html position={[0, 3.0, 0]} center distanceFactor={8}>
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(76,20,169,0.95), rgba(30,8,80,0.95))',
+              border: '1.5px solid rgba(199,159,255,0.6)',
+              borderRadius: 10, padding: '4px 12px',
+              fontFamily: "'Rajdhani',sans-serif",
+              fontWeight: 800, fontSize: 20, color: '#fff',
+              textTransform: 'uppercase',
+              boxShadow: '0 0 18px rgba(100,17,217,0.55)',
+            }}>
+             'oliii'
+            </div>
+          </Html>
+        </BuildingModel>
       )}
     </group>
   )
@@ -510,7 +524,7 @@ const PainelSelecionado = ({ building, isFullscreen, moveMode, onMover, onFechar
           Mover edifício
         </button>
       )}
-
+{/* 
       {!isFullscreen && (
         <div style={{
           background: 'rgba(242,116,5,0.15)',
@@ -524,7 +538,7 @@ const PainelSelecionado = ({ building, isFullscreen, moveMode, onMover, onFechar
         }}>
           ⛶ Entre em fullscreen para mover
         </div>
-      )}
+      )} */}
     </div>
   )
 }
