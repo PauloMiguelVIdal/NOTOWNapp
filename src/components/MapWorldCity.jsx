@@ -1,7 +1,7 @@
 // src/components/MapWorldCity.jsx
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { ContactShadows, OrbitControls } from '@react-three/drei'
+import { ContactShadows, OrbitControls,Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { BuildingModel } from './BuildingModel'
 import { resolverModeloSede, MODELOS, EDIFICIO_PARA_MODELO } from './BuildingModels'
@@ -217,14 +217,15 @@ const HexTileClusterSatelite = React.memo(({ hex, corTopo, modeloId, corFallback
     <group position={[x, 0, z]}>
       <HexBase corTopo={corTopo} config={config} />
       {modeloId != null && (
-        <BuildingModel
-          nomeEdificio={null}
-          corFallback={corFallback || '#888888'}
-          posicaoBase={[0, 0.22, 0]}
-          _overrideModeloId={modeloId}
-          graphicsConfig={config}
-        >
-          <Html position={[0, 3.0, 0]} center distanceFactor={8}>
+    <>
+      <BuildingModel
+        nomeEdificio={null}
+        corFallback={corFallback || '#888888'}
+        posicaoBase={[0, 0.22, 0]}
+        _overrideModeloId={modeloId}
+        graphicsConfig={config}
+      />
+      <Html position={[0, 1.8, 0]} center distanceFactor={8}>
             <div style={{
               background: 'linear-gradient(135deg, rgba(76,20,169,0.95), rgba(30,8,80,0.95))',
               border: '1.5px solid rgba(199,159,255,0.6)',
@@ -234,10 +235,11 @@ const HexTileClusterSatelite = React.memo(({ hex, corTopo, modeloId, corFallback
               textTransform: 'uppercase',
               boxShadow: '0 0 18px rgba(100,17,217,0.55)',
             }}>
-             'oliii'
+             olá
             </div>
           </Html>
-        </BuildingModel>
+
+          </>
       )}
     </group>
   )
@@ -310,12 +312,28 @@ const HexTile = React.memo(({
       />
 
       {building && (
+        <>
         <BuildingModel
           nomeEdificio={building.nome}
           corFallback={SETOR_CONFIG[building.setor]?.cor4 || '#888888'}
           posicaoBase={[0, 0.22, 0]}
           graphicsConfig={config}
-        />
+          />
+         <Html position={[0, 1.8, 0]} center distanceFactor={8}>
+      <div style={{
+        background: 'linear-gradient(135deg, rgba(76,20,169,0.95), rgba(30,8,80,0.95))',
+        border: '1.5px solid rgba(199,159,255,0.6)',
+        borderRadius: 10, padding: '4px 12px',
+        fontFamily: "'Rajdhani',sans-serif",
+        fontWeight: 800, fontSize: 16, color: '#fff',
+        textTransform: 'uppercase',
+        whiteSpace: 'nowrap',
+        boxShadow: '0 0 18px rgba(100,17,217,0.55)',
+      }}>
+        {building.nome}
+      </div>
+    </Html>
+        </>
       )}
 
       {moveMode && isHovered && isBlocked && (
@@ -352,6 +370,19 @@ const Sede = React.memo(({ nomeEmpresa, porte, config = {} }) => {
         _overrideConfig={sedeConfig}
         graphicsConfig={config}
       />
+              <Html position={[0, 3.0, 0]} center distanceFactor={8}>
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(76,20,169,0.95), rgba(30,8,80,0.95))',
+          border: '1.5px solid rgba(199,159,255,0.6)',
+          borderRadius: 10, padding: '4px 12px',
+          fontFamily: "'Rajdhani',sans-serif",
+          fontWeight: 800, fontSize: 20, color: '#fff',
+          textTransform: 'uppercase',
+          boxShadow: '0 0 18px rgba(100,17,217,0.55)',
+        }}>
+          {nomeEmpresa || 'Sua Empresa'}
+        </div>
+      </Html>
     </group>
   )
 })
@@ -671,7 +702,7 @@ export default function MapWorld({
 
         <group>
           <Sede
-            nomeEmpresa={'FitCity'}
+            nomeEmpresa={'Central Conhecimento'}
             porte={porte}
             config={graphicsConfig}
           />
