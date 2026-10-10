@@ -91,6 +91,12 @@ export const PACOTES = {
     basePath: '/models/kenney_racing-kit/GLTF format/',
     colormap: null
   },
+  'kenney_modular-buildings': {
+    label: 'kenney_modular-buildings',
+    basePath: '/models/kenney_modular-buildings/GLB format/',
+    colormap: '/models/kenney_modular-buildings/GLB format/Textures/colormap.png'
+    // colormap: 'null'
+  },
 
   'custom': {
     label: 'Custom',
@@ -2215,15 +2221,7 @@ export const MODELOS = {
     arquivo: 'floorHalf.glb',
     escala: [0.8, 4, 0.8], posY: 1.5, rotacaoCorrecao: [Math.PI / 2, 0, 0], corTint: null,
   },
-  553: {
-    label: 'pá eólica',
-    pacote: 'kenney_furniture-kit',
-    arquivo: 'floorHalf.glb',
-    escala: [0.8, 4, 0.8],
-    posY: 1.5,
-    rotacaoCorrecao: [0, 0, Math.PI / 2], // 🔥 eixo correto
-    corTint: null,
-  },
+  
 
   554: {
     label: 'criação de ovinos',
@@ -2246,6 +2244,87 @@ export const MODELOS = {
       { modeloId: 119, offset: [0, 0, 0], escala: 1, rotacao: 1.6},
     ]
   },
+    555: {
+    label: 'somenteFoquete',
+    tipo: 'composto',
+    partes: [
+      { modeloId: 111, offset: [0, 0, 0], escala: 1, rotacao: 0 },
+      { modeloId: 467, offset: [0, 0, 0], escala: 1, rotacao: 1.6},
+    ]
+  },
+    556: {
+    label: 'usina termelétrica combustíveis',
+    tamanho: 7,          // ← ativa o cluster
+    tipo: 'composto',
+    partes: [
+      { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
+      { modeloId: 68, offset: [0, 0.05, 0.0], escala: 0.40, rotacao: 90 },
+    ],
+    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
+      { modeloId: 459 },  // topo 
+      { modeloId: 459 },   // topo esquerda
+      { modeloId: 467 },  // baixo esquerda
+      { modeloId: 456 }, //baixo 
+      { modeloId: 467 }, //baixo direita
+      { modeloId: 459 },  //topo direita
+    ]
+  },
+    557: {
+    label: 'predioTeste1',
+    pacote: 'kenney_city-kit-commercial_2.1',
+    arquivo: 'low-detail-building-a',
+    escala: 1,
+    posY: 0,
+    rotacao: 0,
+    corTint: null,
+  },
+    558: {
+    label: 'predioTeste2',
+    pacote: 'kenney_city-kit-commercial_2.1',
+    arquivo: 'low-detail-building-h',
+    escala: 1,
+    posY: 0,
+    rotacao: 0,
+    corTint: null,
+  },
+    559: {
+    label: 'predioTeste3',
+    pacote: 'kenney_city-kit-commercial_2.1',
+    arquivo: 'low-detail-building-k',
+    escala: 1,
+    posY: 0,
+    rotacao: 0,
+    corTint: null,
+  },
+      560: {
+    label: 'foguete completo',
+    tipo: 'compostoEscalavel',
+    partes: [
+      { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
+      // { modeloId: 557, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0  , 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.62, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.93, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
+      // { modeloId: 82, offset: [0, 0, 0], escala: 0.3, rotacao: 0.2 },
+      // { modeloId: 83, offset: [0, 0, 0], escala: 0.3, rotacao: 0.2 },
+    ]
+  },
+  561: {
+    label: 'andar',
+    pacote: 'kenney_modular-buildings',
+    arquivo: 'building-windows-sills',
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: null,
+  },
+
 }
 
 
@@ -2430,6 +2509,9 @@ export const EDIFICIO_PARA_MODELO = {
   "Armazém De Materiais Sensíveis": 547,
   "Reator Nuclear Convencional": 529,
   "Usina De Fusão Nuclear": 530,
+  "Foguete": 467,
+  "PredioCompleto": 560,
+
 }
 
 export const PORTES_ORDENADOS = [

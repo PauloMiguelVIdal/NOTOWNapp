@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, Component } from 'react'
 import { useGLTF, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import { resolverModelo } from './BuildingModels'
+import { Const } from 'three/tsl'
 
 // ─────────────────────────────────────────────────────────────
 //  Cache de disponibilidade
@@ -274,6 +275,32 @@ export function BuildingModel({
       ?? resolverModelo(nomeEdificio)
   }, [_overrideConfig, _overrideModeloId, nomeEdificio])
 
+
+const edificioEhComposto = (() => {
+  const cache = new Map()
+  return (nomeEdificio) => {
+    if (cache.has(nomeEdificio)) return cache.get(nomeEdificio)
+    const modeloId = EDIFICIO_PARA_MODELO[nomeEdificio]
+    const result = modeloId ? MODELOS[modeloId]?.tipo === 'composto' : false
+    cache.set(nomeEdificio, result)
+    return result
+  }
+})()
+
+const alturaAndar = 0.31
+
+// const qualAndar = index
+
+const quantidadeAndares = 20 
+
+const prédioAtual = []
+
+
+
+
+
+
+
   // 🔹 SIMPLES
   if (config?.tipo === 'simples') {
     return (
@@ -308,6 +335,31 @@ export function BuildingModel({
       </group>
     )
   }
+
+  if (config?.tipo === 'compostoEscalavel') {
+    return (
+      <group position={posicaoBase}>
+        {config.partes.map((parte, i) => (
+          <group
+            key={i}
+            position={parte.offset || [0, i*alturaAndar, 0]}
+            rotation={[0, parte.rotacaoExtra ?? 0, 0]}
+            scale={parte.escalaVec.map(v => v * (parte.escalaExtra ?? 1))}
+          >
+            <ModeloLoader 
+              config={parte} 
+              corFallback={corFallback}
+              graphicsConfig={graphicsConfig}
+            />
+          </group>
+        ))}
+      </group>
+    )
+  }
+
+
+
+
 
   // Config inválida → fallback
   return (

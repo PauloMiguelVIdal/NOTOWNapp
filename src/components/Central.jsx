@@ -27,51 +27,50 @@ export default function Central() {
   }, [hexGrid])
 
   const pastasArquivos = [
-    { nome:'Javascript',quantidade: 3 }, 
-    {nome:'Node', quantidade:2 }, 
-    { nome:'React',quantidade: 2 }, 
-    {nome: 'Next',quantidade: 1 },]
+    { nome: 'Foguete', quantidade: 3 },
+    { nome: 'Node', quantidade: 2 },
+    { nome: 'React', quantidade: 2 },
+    { nome: 'PredioCompleto', quantidade: 1 },]
 
-// const edificiosAtivos = useMemo(() => {
-//   return pastasArquivos?.flatMap((pasta) =>
-//     Array.from({ length: pasta.quantidade }, (_, i) => ({
-//       id: `${pasta.nome}-${i}`,
-//       nome: pasta.nome,
-//       setor: 'tecnologia',
-//       quantidade: pasta.quantidade
-//     }))
-//   )
-// }, [pastasArquivos])
+  // const edificiosAtivos = useMemo(() => {
+  //   return pastasArquivos?.flatMap((pasta) =>
+  //     Array.from({ length: pasta.quantidade }, (_, i) => ({
+  //       id: `${pasta.nome}-${i}`,
+  //       nome: pasta.nome,
+  //       setor: 'tecnologia',
+  //       quantidade: pasta.quantidade
+  //     }))
+  //   )
+  // }, [pastasArquivos])
 
-const edificiosAtivos = useMemo(() => {
-  return pastasArquivos?.map((pasta, i) =>
+  const edificiosAtivos = useMemo(() => {
+    return pastasArquivos?.map((pasta, i) =>
     ({
-  
+
       id: `${pasta.nome}-${i}`,
       nome: pasta.nome,
       setor: 'tecnologia',
-      quantidade: pasta.quantidade
+      quantidade: pasta.quantidade,
     }
     )
-  )
-  
-}, [pastasArquivos])
+    )
+  }, [pastasArquivos])
 
   const posicoes = useMemo(() => {
-  const livres = hexGrid
-    .map(h => `${h.q},${h.r}`)
-    .filter(k => k !== '0,0')
+    const livres = hexGrid
+      .map(h => `${h.q},${h.r}`)
+      .filter(k => k !== '0,0')
 
-  const mapa = {}
-  edificiosAtivos.forEach((ed, i) => {
-    if (ed && livres[i]) mapa[livres[i]] = ed.id   
-  })
-  return mapa
-}, [hexGrid, edificiosAtivos])
+    const mapa = {}
+    edificiosAtivos.forEach((ed, i) => {
+      if (ed && livres[i]) mapa[livres[i]] = ed.id
+    })
+    return mapa
+  }, [hexGrid, edificiosAtivos])
 
-// rerenderizando o mapa
-//dependendo cada um ele renderiza novamente
-//renderizando conforme a quantidade
+  // rerenderizando o mapa
+  //dependendo cada um ele renderiza novamente
+  //renderizando conforme a quantidade
 
 
   const edificioPorId = useMemo(() => {
@@ -82,10 +81,10 @@ const edificiosAtivos = useMemo(() => {
 
 
   useEffect(() => {
-  console.log('edificiosAtivos:', edificiosAtivos)
-  console.log('primeiro:', edificiosAtivos[0])
-  console.log('edificioPorId size:', edificioPorId.size)
-}, [edificiosAtivos, edificioPorId])
+    console.log('edificiosAtivos:', edificiosAtivos)
+    console.log('primeiro:', edificiosAtivos[0])
+    console.log('edificioPorId size:', edificioPorId.size)
+  }, [edificiosAtivos, edificioPorId])
 
   const satelites = useMemo(() => {
     const mapa = {}
@@ -276,6 +275,7 @@ const edificiosAtivos = useMemo(() => {
       <MapWorld
         // porte={porte}
         edificiosAtivos={edificiosAtivos}
+
         posicoes={posicoes}
 
         satelites={satelites}
