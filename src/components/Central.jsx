@@ -2,88 +2,338 @@ import React, { useState, useRef, useCallback, useEffect, useMemo } from "react"
 import { motion, AnimatePresence } from "motion/react"
 
 import MapWorld from "./MapWorldCity"
+import { EDIFICIO_PARA_MODELO, MODELOS } from "./BuildingModels"
 
 import { defineHex, Grid, spiral } from 'honeycomb-grid'
 import { useNotownStore } from "../store/notownStore"
 
 // ─────────────────────────────────────────────────────────────
-//  Gera um prédio com N andares e 2..5 apartamentos por andar
+//  Constantes
 // ─────────────────────────────────────────────────────────────
+const STATUS = {
+  dominado:   { label: 'Dominado',   cor: '#6411D9' },
+  aprendendo: { label: 'Aprendendo', cor: '#A67BF5' },
+  novo:       { label: 'Novo',       cor: 'rgba(255,255,255,0.22)' },
+  revisar:    { label: 'Revisar',    cor: '#F27405' },
+}
+const ORDEM_STATUS = ['dominado', 'aprendendo', 'novo', 'revisar']
+
+const COLS = 5 // máximo de apartamentos por andar
+
+// Fora do componente: referência estável (antes era recriado a cada render)
+const PASTAS_ARQUIVOS = [
+  { nome: 'Node', quantidade: 2 },
+  { nome: 'React', quantidade: 2 },
+  { nome: 'PredioCompleto', quantidade: 1 },
+]
+
+// Vizinhos axiais de um hex (usado só por clusters)
+const HEX_DIRECTIONS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]]
+const vizinhosDeHex = (q, r) => HEX_DIRECTIONS.map(([dq, dr]) => `${q + dq},${r + dr}`)
+
+// ─────────────────────────────────────────────────────────────
+//  Largura responsiva da sidebar
+// ─────────────────────────────────────────────────────────────
+const calcSidebarW = () =>
+  typeof window === 'undefined'
+    ? 820
+    : Math.max(640, Math.min(Math.round(window.innerWidth * 0.55), 920))
+
+function useSidebarWidth() {
+  const [w, setW] = useState(calcSidebarW)
+  useEffect(() => {
+    const onResize = () => setW(calcSidebarW())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return w
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Dados
+// ─────────────────────────────────────────────────────────────
+function calcStats(cards) {
+  const s = { total: cards.length, dominado: 0, aprendendo: 0, novo: 0, revisar: 0 }
+  cards.forEach(c => { s[c.status]++ })
+  s.pct = s.total ? Math.round((s.dominado / s.total) * 100) : 0
+  return s
+}
+
 function gerarPredio({ nome, andares, arquivosBase = [] }) {
   const id = `${nome}-${andares}`
 
   const listaAndares = Array.from({ length: andares }, (_, i) => {
-    const numeroAndar = i + 1
-    const qtdApartamentos = 2 + ((i * 7 + nome.length) % 4)
+    const numero = i + 1
+    const qtd = 2 + ((i * 7 + nome.length) % 4)
+    const base = arquivosBase[i % Math.max(arquivosBase.length, 1)] ?? `${nome.toLowerCase()}-${numero}`
+    const ext = ['.js', '.jsx', '.ts', '.tsx', '.json', '.md'][i % 6]
 
-    const apartamentos = Array.from({ length: qtdApartamentos }, (_, j) => {
-      const base = arquivosBase[(i + j) % Math.max(arquivosBase.length, 1)] ?? `${nome.toLowerCase()}-${numeroAndar}-${j + 1}`
-      const extensao = ['.js', '.jsx', '.ts', '.tsx', '.json', '.md'][(i + j) % 6]
-      const nomeArquivo = `${base}${extensao}`
-      const status = ['livre', 'ativo', 'manutencao'][(i * 3 + j) % 3]
-
-      return {
-        id: `${id}-andar${numeroAndar}-apt${j + 1}`,
-        numero: `${numeroAndar}${String(j + 1).padStart(2, '0')}`,
-        arquivo: nomeArquivo,
-        status,
-      }
-    })
+    const cards = Array.from({ length: qtd }, (_, j) => ({
+      id: `${id}-andar${numero}-card${j + 1}`,
+      numero: `${numero}${String(j + 1).padStart(2, '0')}`,
+      pergunta: `Flashcard ${j + 1} · ${base}`,
+      status: ORDEM_STATUS[(i * 3 + j * 5 + nome.length) % 4],
+    }))
 
     return {
-      id: `${id}-andar${numeroAndar}`,
-      numero: numeroAndar,
-      apartamentos,
+      id: `${id}-andar${numero}`,
+      numero,
+      arquivo: `${base}${ext}`,
+      apartamentos: cards,
+      stats: calcStats(cards),
     }
   })
 
-  return { id, nome, andares: listaAndares }
+  return {
+    id, nome, andares: listaAndares,
+    stats: calcStats(listaAndares.flatMap(a => a.apartamentos)),
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
-//  Fachada 2D de um apartamento — porta + janela
+//  Barra empilhada de progresso
 // ─────────────────────────────────────────────────────────────
-function ApartamentoFachada({ apt, selecionado, onClick }) {
-  const portaCor =
-    apt.status === 'ativo'      ? 'bg-emerald-500/70 border-emerald-300/60' :
-    apt.status === 'manutencao' ? 'bg-amber-500/70 border-amber-300/60'     :
-                                  'bg-neutral-700 border-neutral-500/60'
+function BarraStatus({ stats, className = 'h-1.5' }) {
+  return (
+    <div className={`flex w-full overflow-hidden rounded-full bg-white/10 ${className}`}>
+      {ORDEM_STATUS.map(s =>
+        stats[s] ? (
+          <div key={s} style={{ width: `${(stats[s] / stats.total) * 100}%`, background: STATUS[s].cor }} />
+        ) : null
+      )}
+    </div>
+  )
+}
 
-  const janelaCor =
-    apt.status === 'ativo'      ? 'bg-emerald-200/80' :
-    apt.status === 'manutencao' ? 'bg-amber-200/80'   :
-                                  'bg-sky-200/60'
-
+// ─────────────────────────────────────────────────────────────
+//  Janela (apartamento = flashcard) — proporção fixa
+// ─────────────────────────────────────────────────────────────
+function Janela({ apt, selecionado, onClick }) {
   return (
     <button
       onClick={onClick}
-      title={apt.arquivo}
+      title={`${apt.pergunta} · ${STATUS[apt.status].label}`}
       className={[
-        "relative flex-1 min-w-0 h-16 rounded-md border transition-all overflow-hidden group",
+        'relative aspect-[5/4] min-w-0 overflow-hidden rounded-md border transition-all',
         selecionado
-          ? "border-indigo-400 shadow-[0_0_0_2px_rgba(129,140,248,0.35)]"
-          : "border-white/10 hover:border-white/30",
-        "bg-gradient-to-b from-white/[0.06] to-white/[0.02]",
+          ? 'border-[#F27405] shadow-[0_0_0_2px_rgba(242,116,5,0.4)]'
+          : 'border-white/10 hover:border-[#6411D9]',
+        'bg-white/[0.04]',
       ].join(' ')}
     >
-      <div className="absolute top-1 left-1 right-1 flex justify-center">
-        <span className="text-[10px] font-semibold text-white/70 tabular-nums tracking-wider">
-          {apt.numero}
-        </span>
-      </div>
-
-      <div className="absolute bottom-1.5 left-0 right-0 flex items-end justify-center gap-1.5 px-2">
-        <span className={`w-3 h-3 rounded-[2px] ${janelaCor} border border-black/20 shadow-inner`} />
-        <span className={`w-4 h-5 rounded-t-[3px] ${portaCor} border border-black/30 shadow-inner relative`}>
-          <span className="absolute right-[2px] top-1/2 -translate-y-1/2 w-[2px] h-[2px] rounded-full bg-yellow-200/80" />
-        </span>
-      </div>
-
-      <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-white/5 to-transparent pointer-events-none" />
+      {/* janela */}
+      <span
+        className="absolute inset-x-[18%] top-[14%] h-[38%] rounded-[3px] border border-black/20"
+        style={{ background: STATUS[apt.status].cor }}
+      />
+      {/* porta */}
+      <span className="absolute bottom-0 left-1/2 h-[30%] w-[26%] -translate-x-1/2 rounded-t-[3px] border border-b-0 border-black/30 bg-[#350973]" />
     </button>
   )
 }
 
+// ─────────────────────────────────────────────────────────────
+//  Fachada do prédio (pasta) — 1 bloco = 1 andar (arquivo)
+// ─────────────────────────────────────────────────────────────
+function FachadaPredio({ predio, andarAbertoId, aptSelId, onAndar, onApt }) {
+  const refs = useRef({})
+
+  useEffect(() => {
+    if (andarAbertoId) {
+      refs.current[andarAbertoId]?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    }
+  }, [andarAbertoId])
+
+  // topo do prédio primeiro (sem flex-col-reverse, para o scroll ser previsível)
+  const andaresDeCima = useMemo(() => [...predio.andares].reverse(), [predio])
+
+  return (
+    <div className="mx-auto w-full max-w-[460px]">
+      <div className="mx-auto h-3 w-[96%] rounded-t-md bg-[#6411D9]" />
+
+      <div className="border-x border-[#6411D9]/50 bg-[#1a0640]">
+        {andaresDeCima.map(a => {
+          const aberto = a.id === andarAbertoId
+          return (
+            <div
+              key={a.id}
+              ref={el => { refs.current[a.id] = el }}
+              className={[
+                'border-b border-white/5 px-2.5 py-2 transition-colors',
+                aberto ? 'bg-[#F27405]/10 shadow-[inset_2px_0_0_#F27405]' : '',
+              ].join(' ')}
+            >
+              <button
+                onClick={() => onAndar(a.id)}
+                className="mb-1.5 flex w-full items-center gap-2 text-left"
+              >
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-white/10 text-[10px] font-bold text-white/70">
+                  {a.numero}
+                </span>
+                <span className="min-w-0 flex-1 truncate font-mono text-[11px] text-white/70">
+                  {a.arquivo}
+                </span>
+                {a.stats.revisar > 0 && (
+                  <span className="flex shrink-0 items-center gap-1 text-[10px] font-semibold tabular-nums text-[#F27405]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#F27405]" />
+                    {a.stats.revisar}
+                  </span>
+                )}
+              </button>
+
+              <div
+                className="grid gap-1.5"
+                style={{ gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))` }}
+              >
+                {a.apartamentos.map(apt => (
+                  <Janela
+                    key={apt.id}
+                    apt={apt}
+                    selecionado={aptSelId === apt.id}
+                    onClick={() => onApt(apt.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* térreo */}
+      <div className="flex h-8 items-end justify-center border border-t-0 border-[#6411D9]/50 bg-[#1a0640]">
+        <div className="h-6 w-8 rounded-t-md bg-[#F27405]/70" />
+      </div>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Painel analítico (esquerda)
+// ─────────────────────────────────────────────────────────────
+function RankList({ titulo, cor, itens, onAbrir }) {
+  if (!itens.length) return null
+  return (
+    <section>
+      <h3 className="mb-1.5 text-[10px] font-semibold uppercase tracking-widest" style={{ color: cor }}>
+        {titulo}
+      </h3>
+      <ul className="flex flex-col gap-1">
+        {itens.map(({ andar, valor, max, rotulo }) => (
+          <li key={andar.id}>
+            <button
+              onClick={() => onAbrir(andar.id)}
+              className="group w-full rounded-md px-2 py-1.5 text-left transition-colors hover:bg-white/5"
+            >
+              <div className="flex items-center justify-between gap-2 text-[11px]">
+                <span className="truncate font-mono text-white/80">{andar.arquivo}</span>
+                <span className="shrink-0 tabular-nums" style={{ color: cor }}>{rotulo}</span>
+              </div>
+              <div className="mt-1 h-1 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full" style={{ width: `${(valor / max) * 100}%`, background: cor }} />
+              </div>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAndar, apartamentoSelecionado }) {
+  const { prioridade, comecar, fortes } = useMemo(() => {
+    const a = predioAtivo.andares
+    const top = (arr, n) => arr.slice(0, n)
+    const maxRev = Math.max(1, ...a.map(x => x.stats.revisar))
+    const maxNovo = Math.max(1, ...a.map(x => x.stats.novo))
+    return {
+      prioridade: top(
+        [...a].filter(x => x.stats.revisar > 0)
+          .sort((x, y) => y.stats.revisar - x.stats.revisar || x.stats.pct - y.stats.pct), 6
+      ).map(andar => ({ andar, valor: andar.stats.revisar, max: maxRev, rotulo: `${andar.stats.revisar} p/ revisar` })),
+      comecar: top(
+        [...a].filter(x => x.stats.novo > 0).sort((x, y) => y.stats.novo - x.stats.novo), 4
+      ).map(andar => ({ andar, valor: andar.stats.novo, max: maxNovo, rotulo: `${andar.stats.novo} novos` })),
+      fortes: top([...a].sort((x, y) => y.stats.pct - x.stats.pct), 4)
+        .map(andar => ({ andar, valor: andar.stats.pct, max: 100, rotulo: `${andar.stats.pct}%` })),
+    }
+  }, [predioAtivo])
+
+  const s = predioAtivo.stats
+
+  return (
+    <div className="flex h-full w-[320px] shrink-0 flex-col border-r border-[#6411D9]/25">
+      <div className="shrink-0 border-b border-[#6411D9]/25 p-4">
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {predios.map(p => (
+            <button
+              key={p.id}
+              onClick={() => onSelecionarPredio(p.id)}
+              className={[
+                'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+                p.id === predioAtivo.id
+                  ? 'bg-[#6411D9] text-white'
+                  : 'bg-white/5 text-white/55 hover:bg-[#6411D9]/25 hover:text-white',
+              ].join(' ')}
+            >
+              {p.nome}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-end justify-between">
+          <div>
+            <div className="text-[10px] uppercase tracking-widest text-white/35">Pasta · análise</div>
+            <h2 className="text-lg font-semibold leading-tight text-white">{predioAtivo.nome}</h2>
+            <p className="mt-0.5 text-[11px] text-white/40">{predioAtivo.andares.length} arquivos · {s.total} flashcards</p>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold tabular-nums text-white">{s.pct}%</div>
+            <div className="text-[10px] uppercase tracking-wide text-white/35">dominado</div>
+          </div>
+        </div>
+
+        <div className="mt-3"><BarraStatus stats={s} /></div>
+        <div className="mt-2 grid grid-cols-4 gap-1">
+          {ORDEM_STATUS.map(k => (
+            <div key={k} className="rounded bg-white/[0.04] px-1.5 py-1">
+              <div className="flex items-center gap-1 text-[9px] uppercase tracking-wide text-white/45">
+                <span className="h-1.5 w-1.5 rounded-[2px]" style={{ background: STATUS[k].cor }} />
+                {STATUS[k].label}
+              </div>
+              <div className="text-sm font-semibold tabular-nums text-white">{s[k]}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
+        <RankList titulo="Prioridade de revisão" cor="#F27405" itens={prioridade} onAbrir={onAbrirAndar} />
+        <RankList titulo="Ainda não iniciados" cor="#A67BF5" itens={comecar} onAbrir={onAbrirAndar} />
+        <RankList titulo="Mais fortes" cor="#6411D9" itens={fortes} onAbrir={onAbrirAndar} />
+      </div>
+
+      <div className="shrink-0 border-t border-[#6411D9]/25 p-4">
+        {apartamentoSelecionado ? (
+          <div className="text-xs">
+            <div className="text-[10px] uppercase tracking-wide text-white/35">Flashcard selecionado</div>
+            <div className="truncate font-medium text-white">{apartamentoSelecionado.pergunta}</div>
+            <div className="mt-0.5 flex items-center gap-1.5 text-[10px] text-white/45">
+              <span className="h-2 w-2 rounded-[2px]" style={{ background: STATUS[apartamentoSelecionado.status].cor }} />
+              {STATUS[apartamentoSelecionado.status].label}
+              <span className="truncate font-mono">· {apartamentoSelecionado.arquivo} · Apt {apartamentoSelecionado.numero}</span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-white/35">Nenhum flashcard selecionado</p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ═════════════════════════════════════════════════════════════
+//  Central
+// ═════════════════════════════════════════════════════════════
 export default function Central() {
 
   const [selectedKey, setSelectedKey] = useState(null)
@@ -91,7 +341,8 @@ export default function Central() {
   const [hoveredKey, setHoveredKey] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  const larguraMapa = isSidebarOpen ? '60%' : '100%'
+  const SIDEBAR_W = useSidebarWidth()
+  const larguraMapa = isSidebarOpen ? `calc(100% - ${SIDEBAR_W}px)` : '100%'
 
   const posicionarCarta = useNotownStore((s) => s.posicionarCartaPatrimonio)
 
@@ -145,23 +396,26 @@ export default function Central() {
     setApartamentoSelecionadoId(prev => prev === aptId ? null : aptId)
   }, [])
 
-  // ─── Configuração do grid de hexágonos (mapa) ───
-  const pastasArquivos = [
-    { nome: 'Node', quantidade: 2 },
-    { nome: 'React', quantidade: 2 },
-    { nome: 'PredioCompleto', quantidade: 1 },
-  ]
+  const handleSelecionarPredio = useCallback((id) => {
+    setPredioSelecionadoId(id)
+    setAndarAbertoId(null)
+    setApartamentoSelecionadoId(null)
+  }, [])
 
+  const handleAbrirAndar = useCallback((id) => {
+    setAndarAbertoId(id)
+    setApartamentoSelecionadoId(null)
+  }, [])
+
+  // ─── Edifícios no mapa ───
   const edificiosAtivos = useMemo(() => {
-    return pastasArquivos?.map((pasta, i) =>
-      ({
-        id: `${pasta.nome}-${i}`,
-        nome: pasta.nome,
-        setor: 'tecnologia',
-        quantidade: pasta.quantidade,
-      })
-    )
-  }, [pastasArquivos])
+    return PASTAS_ARQUIVOS.map((pasta, i) => ({
+      id: `${pasta.nome}-${i}`,
+      nome: pasta.nome,
+      setor: 'tecnologia',
+      quantidade: pasta.quantidade,
+    }))
+  }, [])
 
   const posicoes = useMemo(() => {
     const livres = hexGrid
@@ -329,13 +583,21 @@ export default function Central() {
       return
     }
     if (posicoes[key]) {
+      // sincroniza a aba com o prédio clicado no mapa
+      const ed = edificioPorId.get(posicoes[key])
+      const predio = predios.find(p => p.nome === ed?.nome)
+      if (predio) {
+        setPredioSelecionadoId(predio.id)
+        setAndarAbertoId(null)
+        setApartamentoSelecionadoId(null)
+      }
       setSelectedKey((prev) => (prev === key ? null : key))
       setIsSidebarOpen(true)
     } else {
       setSelectedKey(null)
       setIsSidebarOpen(false)
     }
-  }, [moveMode, posicoes, moverEdificio])
+  }, [moveMode, posicoes, moverEdificio, edificioPorId, predios])
 
   const handleHover = useCallback((key, isOver) => {
     setHoveredKey(isOver ? key : null)
@@ -370,7 +632,7 @@ export default function Central() {
     if (!apartamentoSelecionadoId || !predioAtivo) return null
     for (const andar of predioAtivo.andares) {
       const apt = andar.apartamentos.find(a => a.id === apartamentoSelecionadoId)
-      if (apt) return { ...apt, andar: andar.numero }
+      if (apt) return { ...apt, andar: andar.numero, arquivo: andar.arquivo }
     }
     return null
   }, [apartamentoSelecionadoId, predioAtivo])
@@ -378,9 +640,10 @@ export default function Central() {
   return (
     <div className="h-screen w-full flex overflow-hidden bg-neutral-950">
 
+      {/* `layout` removido: combinado com animação de width, ele escalava o canvas e distorcia o mapa */}
       <motion.div
-        layout
         animate={{ width: larguraMapa }}
+        initial={false}
         transition={{ duration: 0.5, ease: easingLayout }}
         className="relative h-full min-w-0"
         style={{ willChange: 'width' }}
@@ -416,193 +679,48 @@ export default function Central() {
 
       <motion.aside
         initial={false}
-        animate={{
-          width: isSidebarOpen ? '40%' : '0%',
-          opacity: isSidebarOpen ? 1 : 0,
-        }}
+        animate={{ width: isSidebarOpen ? SIDEBAR_W : 0, opacity: isSidebarOpen ? 1 : 0 }}
         transition={{
           width:   { duration: 0.5, ease: easingLayout },
           opacity: { duration: 0.35, ease: 'easeOut' },
         }}
-        className="h-full overflow-hidden bg-neutral-900/95 backdrop-blur-md border-l border-white/10"
-        style={{ willChange: 'width, opacity' }}
+        className="h-full shrink-0 overflow-hidden border-l border-[#6411D9]/30 bg-[#1a0640]/95 backdrop-blur-md"
       >
-        <div className="h-full w-full flex flex-col">
+        {/* largura fixa: evita o conteúdo reflowar durante a animação */}
+        <div className="flex h-full" style={{ width: SIDEBAR_W }}>
 
-          {/* ─── Cabeçalho ─── */}
-          <div className="p-4 border-b border-white/10 shrink-0">
-            <h2 className="text-white text-lg font-semibold mb-3">
-              Painel do Edifício
-            </h2>
+          {/* ESQUERDA: analítico */}
+          <PainelAnalitico
+            predios={predios}
+            predioAtivo={predioAtivo}
+            onSelecionarPredio={handleSelecionarPredio}
+            onAbrirAndar={handleAbrirAndar}
+            apartamentoSelecionado={apartamentoSelecionado}
+          />
 
-            <div className="flex gap-2 flex-wrap">
-              {predios.map((p) => {
-                const ativo = p.id === predioAtivo?.id
-                return (
-                  <button
-                    key={p.id}
-                    onClick={() => {
-                      setPredioSelecionadoId(p.id)
-                      setAndarAbertoId(null)
-                      setApartamentoSelecionadoId(null)
-                    }}
-                    className={[
-                      "px-3 py-1.5 rounded-md text-xs font-medium transition-colors",
-                      ativo
-                        ? "bg-indigo-500 text-white"
-                        : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/90",
-                    ].join(' ')}
-                  >
-                    {p.nome}
-                  </button>
-                )
-              })}
-            </div>
-
-            <p className="text-white/40 text-[11px] mt-3">
-              {predioAtivo?.andares.length} andares · 2 a 5 arquivos por andar
-            </p>
-          </div>
-
-          {/* ─── Lista de andares ─── */}
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="flex flex-col-reverse gap-1.5">
-              <AnimatePresence initial={false}>
-                {predioAtivo?.andares.map((andar) => {
-                  const aberto = andarAbertoId === andar.id
-                  return (
-                    <motion.div
-                      key={andar.id}
-                      layout
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.25, ease: easingLayout }}
-                      className={[
-                        "rounded-lg border transition-colors overflow-hidden",
-                        aberto
-                          ? "bg-indigo-500/10 border-indigo-400/40"
-                          : "bg-white/5 border-white/10 hover:border-white/20",
-                      ].join(' ')}
-                    >
-                      {/* Linha do andar — só o número, sem barra de janelinhas */}
-                      <button
-                        onClick={() => handleToggleAndar(andar.id)}
-                        className="w-full flex items-center gap-3 px-3 py-2 text-left"
-                      >
-                        <span className={[
-                          "shrink-0 w-9 h-9 rounded-md flex items-center justify-center text-xs font-bold",
-                          aberto
-                            ? "bg-indigo-500 text-white"
-                            : "bg-white/10 text-white/70",
-                        ].join(' ')}>
-                          {andar.numero}
-                        </span>
-
-                        <span className="flex-1 text-white/50 text-[11px]">
-                          Andar {andar.numero}
-                        </span>
-
-                        <span className="shrink-0 text-[10px] text-white/40 tabular-nums">
-                          {andar.apartamentos.length} apts
-                        </span>
-                      </button>
-
-                      {/* Fachada dos apartamentos + lista de arquivos abaixo */}
-                      <AnimatePresence initial={false}>
-                        {aberto && (
-                          <motion.div
-                            key="apts"
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: easingLayout }}
-                            className="overflow-hidden"
-                          >
-                            <div className="px-3 pb-3 pt-2 space-y-2">
-
-                              {/* Fachadas (porta + janela) */}
-                              <div className="flex gap-2 rounded-md bg-neutral-950/60 border border-white/5 p-2">
-                                {andar.apartamentos.map((apt) => (
-                                  <ApartamentoFachada
-                                    key={apt.id}
-                                    apt={apt}
-                                    selecionado={apartamentoSelecionadoId === apt.id}
-                                    onClick={() => handleSelecionarApartamento(apt.id)}
-                                  />
-                                ))}
-                              </div>
-
-                              {/* Lista dos arquivos abaixo */}
-                              <ul className="flex flex-col gap-1">
-                                {andar.apartamentos.map((apt) => {
-                                  const sel = apartamentoSelecionadoId === apt.id
-                                  return (
-                                    <li key={apt.id}>
-                                      <button
-                                        onClick={() => handleSelecionarApartamento(apt.id)}
-                                        className={[
-                                          "w-full flex items-center justify-between gap-2 px-2 py-1.5 rounded text-left text-[11px] transition-colors",
-                                          sel
-                                            ? "bg-indigo-500/20 text-white"
-                                            : "text-white/60 hover:bg-white/5 hover:text-white/90",
-                                        ].join(' ')}
-                                      >
-                                        <span className="flex items-center gap-2 min-w-0">
-                                          <span className="shrink-0 w-6 text-white/40 tabular-nums">
-                                            {apt.numero}
-                                          </span>
-                                          <span className="truncate font-mono">
-                                            {apt.arquivo}
-                                          </span>
-                                        </span>
-                                        <span className={[
-                                          "shrink-0 text-[9px] px-1.5 py-0.5 rounded uppercase tracking-wide",
-                                          apt.status === 'ativo'      ? 'bg-emerald-400/20 text-emerald-300' :
-                                          apt.status === 'manutencao' ? 'bg-amber-400/20 text-amber-300'     :
-                                                                        'bg-white/10 text-white/50',
-                                        ].join(' ')}>
-                                          {apt.status}
-                                        </span>
-                                      </button>
-                                    </li>
-                                  )
-                                })}
-                              </ul>
-
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  )
-                })}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* ─── Rodapé ─── */}
-          <div className="p-4 border-t border-white/10 shrink-0">
-            {apartamentoSelecionado ? (
-              <div className="text-xs">
-                <div className="text-white/40 text-[10px] uppercase tracking-wide">
-                  Arquivo selecionado
-                </div>
-                <div className="text-white font-medium truncate font-mono">
-                  {apartamentoSelecionado.arquivo}
-                </div>
-                <div className="text-white/40 text-[10px] mt-1">
-                  Andar {apartamentoSelecionado.andar} · Apt {apartamentoSelecionado.numero}
-                </div>
+          {/* DIREITA: visual */}
+          <div className="flex h-full min-w-0 flex-1 flex-col">
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[#6411D9]/25 px-4 py-3">
+              <div className="text-[10px] uppercase tracking-widest text-white/35">Fachada · {predioAtivo.nome}</div>
+              <div className="flex flex-wrap justify-end gap-x-3 gap-y-1">
+                {ORDEM_STATUS.map(k => (
+                  <span key={k} className="flex items-center gap-1 text-[10px] text-white/50">
+                    <span className="h-2 w-2 rounded-[2px]" style={{ background: STATUS[k].cor }} />
+                    {STATUS[k].label}
+                  </span>
+                ))}
               </div>
-            ) : (
-              <p className="text-white/40 text-xs">
-                Nenhum arquivo selecionado
-              </p>
-            )}
-            <p className="text-white/30 text-[10px] mt-1">
-              Hex: {selectedKey ?? '—'}
-            </p>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+              <FachadaPredio
+                predio={predioAtivo}
+                andarAbertoId={andarAbertoId}
+                aptSelId={apartamentoSelecionadoId}
+                onAndar={handleToggleAndar}
+                onApt={handleSelecionarApartamento}
+              />
+            </div>
           </div>
 
         </div>
