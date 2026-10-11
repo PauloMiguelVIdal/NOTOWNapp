@@ -2300,20 +2300,20 @@ export const MODELOS = {
     label: 'foguete completo',
     tipo: 'compostoEscalavel',
     partes: [
-      { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
+      // { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       // { modeloId: 556, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
       // { modeloId: 557, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
       // { modeloId: 557, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
       // { modeloId: 557, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
       // { modeloId: 561, offset: [0, -0.31 , 0], escala: 0.5, rotacao: 0.2 },
-      { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
-      { modeloId: 562, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
-      { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
-      { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
+      // { modeloId: 564, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 565, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
+      { modeloId: 563, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
       // { modeloId: 561, offset: [0, 0.62, 0], escala: 0.5, rotacao: 0.2 },
       // { modeloId: 561, offset: [0, 0.93, 0], escala: 0.5, rotacao: 0.2 },
@@ -2333,22 +2333,33 @@ export const MODELOS = {
     label: 'andar',
     pacote: 'kenney_modular-buildings',
     arquivo: 'building-windows-sills',
-    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: null,
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
   },
   562: {
     label: 'andar',
     pacote: 'kenney_modular-buildings',
     arquivo: 'building-windows-high-top-round',
-    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: null,
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
   },
   563: {
-    label: 'somenteTeste',
-    tipo: 'composto',
-    partes: [
-      { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      { modeloId: 561, offset: [0, 0, 0], escala: 1, rotacao: 1.6 },
-    ]
+    label: 'andar',
+    pacote: 'kenney_modular-buildings',
+    arquivo: 'roof-flat-detail-b',
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
   },
+  564: {
+    label: 'andar',
+    pacote: 'kenney_modular-buildings',
+    arquivo: 'building-sample-tower-b',
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
+  },
+  565: {
+    label: 'andar',
+    pacote: 'kenney_modular-buildings',
+    arquivo: 'building-window-door-window-round',
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5,     corTint: [2, 0.9, 0.4],
+  },
+
 
 }
 
@@ -2536,6 +2547,9 @@ export const EDIFICIO_PARA_MODELO = {
   "Usina De Fusão Nuclear": 530,
   "Foguete": 467,
   "PredioCompleto": 560,
+  "Node": 560,
+  "React": 560,
+  
 
 }
 

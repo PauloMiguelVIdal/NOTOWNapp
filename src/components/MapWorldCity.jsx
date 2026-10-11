@@ -20,7 +20,7 @@ const hexToWorld = (hex, size) => ({
 //  CÂMERA — DEFAULTS
 // ─────────────────────────────────────────────────────────────
 const CAMERA_DEFAULTS = {
-  position: [3, 3, 3],       // 🔥 posição padrão (diorama 3/4)
+  position: [3, 3, 3],
   fov: 35,
   target: [0, 0, 0],
   minDistance: 3,
@@ -30,7 +30,6 @@ const CAMERA_DEFAULTS = {
   autoRotate: false,
   autoRotateSpeed: 0.5,
 }
-
 // ─────────────────────────────────────────────────────────────
 //  Cache de verificação
 // ─────────────────────────────────────────────────────────────
@@ -323,7 +322,7 @@ const HexTile = React.memo(({
             graphicsConfig={config}
 
           />
-          <Html position={[0, 1.8, 0]} center distanceFactor={8}>
+          {/* <Html position={[0, 1.8, 0]} center distanceFactor={8}>
             <div style={{
               background: 'linear-gradient(135deg, rgba(76,20,169,0.95), rgba(30,8,80,0.95))',
               border: '1.5px solid rgba(199,159,255,0.6)',
@@ -336,7 +335,7 @@ const HexTile = React.memo(({
             }}>
               {building.quantidade} - {building.nome}
             </div>
-          </Html>
+          </Html> */}
         </>
       )}
 
@@ -360,7 +359,7 @@ const HexTile = React.memo(({
 // ─────────────────────────────────────────────────────────────
 //  CAMADA 4: SEDE
 // ─────────────────────────────────────────────────────────────
-const Sede = React.memo(({ nomeEmpresa, porte, config = {} }) => {
+const Sede = React.memo(({ nomeEmpresa, porte=['Mega Holding'], config = {} }) => {
   const sedeConfig = useMemo(() => resolverModeloSede(porte), [porte])
 
   return (
@@ -482,18 +481,19 @@ const PainelSelecionado = ({ building, isFullscreen, moveMode, onMover, onFechar
       style={{
         position: 'absolute',
         right: 20,
+        top: 20, // Fixado no topo direito
         bottom: 20,
         zIndex: 70,
-        pointerEvents: 'none',
+        pointerEvents: 'none', // Permite clicar no 3D através do fundo
         fontFamily: "'Rajdhani','Segoe UI',sans-serif",
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'stretch',
         gap: 8,
-        minWidth: 220,
-        maxWidth: 280,
+        width: 280, // Largura fixa para parecer uma sidebar
       }}
     >
+      {/* Card do Edifício */}
       <div style={{
         background: 'linear-gradient(135deg, rgba(12,8,28,0.95), rgba(26,14,58,0.95))',
         border: `1.5px solid ${cfg.cor4}88`,
@@ -504,6 +504,7 @@ const PainelSelecionado = ({ building, isFullscreen, moveMode, onMover, onFechar
         alignItems: 'center',
         gap: 10,
         backdropFilter: 'blur(10px)',
+        pointerEvents: 'auto', // Habilita cliques no painel
       }}>
         <div style={{
           width: 36, height: 36, borderRadius: 8,
@@ -534,6 +535,7 @@ const PainelSelecionado = ({ building, isFullscreen, moveMode, onMover, onFechar
         </div>
       </div>
 
+      {/* Botão de Mover */}
       {isFullscreen && !moveMode && (
         <button
           onClick={onMover}
@@ -559,21 +561,6 @@ const PainelSelecionado = ({ building, isFullscreen, moveMode, onMover, onFechar
           Mover edifício
         </button>
       )}
-      {/* 
-      {!isFullscreen && (
-        <div style={{
-          background: 'rgba(242,116,5,0.15)',
-          border: '1px solid rgba(242,116,5,0.4)',
-          borderRadius: 10,
-          padding: '6px 12px',
-          color: '#FFB060',
-          fontSize: 10, fontWeight: 700,
-          letterSpacing: '.06em',
-          textAlign: 'center',
-        }}>
-          ⛶ Entre em fullscreen para mover
-        </div>
-      )} */}
     </div>
   )
 }
@@ -596,6 +583,7 @@ export default function MapWorld({
   moveMode,
   hoveredKey,
   isFullscreen = false,
+  isSidebarOpen = false, // NOVA PROP
 
   // ─── Handlers ───
   onHexClick,
@@ -616,14 +604,11 @@ export default function MapWorld({
   autoRotate,
   autoRotateSpeed,
   dayProgress = 0,
-  /** true = só renderiza o 3D, sem painéis/banners */
   minimalist = false,
-  /** desabilita OrbitControls (para mini mapas estáticos) */
   disableControls = false,
 }) {
   const { config: graphicsConfig } = useGraphicsConfig()
 
-  // Merge com defaults
   const cam = useMemo(() => ({
     position: cameraPosition ?? CAMERA_DEFAULTS.position,
     fov: cameraFov ?? CAMERA_DEFAULTS.fov,
@@ -641,7 +626,6 @@ export default function MapWorld({
     autoRotate, autoRotateSpeed,
   ])
 
-  // Edifício selecionado
   const selectedBuilding = useMemo(() => {
     if (!selectedKey) return null
     const id = posicoes[selectedKey]
@@ -656,8 +640,8 @@ export default function MapWorld({
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: 20, overflow: 'hidden', backgroundColor: '#350973' }}>
 
-      {/* Painel do edifício selecionado (só se não for minimalista) */}
-      {!minimalist && selectedBuilding && !moveMode && (
+      {/* Sidebar do edifício selecionado */}
+      {!minimalist && isSidebarOpen && selectedBuilding && !moveMode && (
         <PainelSelecionado
           building={selectedBuilding}
           isFullscreen={isFullscreen}
@@ -667,7 +651,7 @@ export default function MapWorld({
         />
       )}
 
-      {/* Banner de modo mover (só se não for minimalista) */}
+      {/* Banner de modo mover */}
       {!minimalist && moveMode && (
         <MoveBanner onCancel={onCancelarMove} />
       )}
@@ -679,18 +663,21 @@ export default function MapWorld({
           antialias: canvasConfig.antialias,
           powerPreference: 'high-performance',
         }}
-        // 🔥 Câmera configurável
         camera={{
           position: cam.position,
           fov: cam.fov,
         }}
         onPointerMissed={() => {
-          if (!moveMode && !minimalist) onFecharPainel?.()
+          // Fecha o painel se clicar no vazio (e não estiver em moveMode)
+          if (!moveMode && !minimalist && onFecharPainel) {
+            onFecharPainel()
+          }
         }}
         onCreated={() => {
           onMapReady?.()
         }}
       >
+        {/* ... (Restante do código 3D permanece igual) ... */}
         <SkyDome dayProgress={dayProgress} />
 
         {graphicsConfig.oceanWaves ? (
@@ -711,7 +698,6 @@ export default function MapWorld({
             config={graphicsConfig}
           />
 
-          {/* Satélites */}
           {Object.entries(satelites).map(([key, { corTopo, modeloId, corFallback }]) => {
             if (key === '0,0') return null
             const hex = hexMap?.get(key)
@@ -728,7 +714,6 @@ export default function MapWorld({
             )
           })}
 
-          {/* Tiles */}
           {tilesToRender.map(({ hex, key }) => {
             const edId = posicoes[key]
             const building = edId ? edificioPorId?.get(edId) || null : null
@@ -763,7 +748,6 @@ export default function MapWorld({
             enableZoom={!moveMode}
             enableRotate={!moveMode}
             rotateSpeed={0.5}
-            // 🔥 Controles configuráveis
             minPolarAngle={cam.minPolarAngle}
             maxPolarAngle={cam.maxPolarAngle}
             minDistance={cam.minDistance}
