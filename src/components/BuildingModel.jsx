@@ -275,41 +275,11 @@ export function BuildingModel({
       ?? resolverModelo(nomeEdificio)
   }, [_overrideConfig, _overrideModeloId, nomeEdificio])
 
-
-const edificioEhComposto = (() => {
-  const cache = new Map()
-  return (nomeEdificio) => {
-    if (cache.has(nomeEdificio)) return cache.get(nomeEdificio)
-    const modeloId = EDIFICIO_PARA_MODELO[nomeEdificio]
-    const result = modeloId ? MODELOS[modeloId]?.tipo === 'composto' : false
-    cache.set(nomeEdificio, result)
-    return result
-  }
-})()
-
-const alturaAndar = 0.31
-
-// const qualAndar = index
-
-const quantidadeAndares = 20 
-
-const prédioAtual = []
-
-
-
-
-
-
-
   // 🔹 SIMPLES
   if (config?.tipo === 'simples') {
     return (
       <group position={posicaoBase}>
-        <ModeloLoader 
-          config={config} 
-          corFallback={corFallback}
-          graphicsConfig={graphicsConfig}
-        />
+        <ModeloLoader config={config} corFallback={corFallback} graphicsConfig={graphicsConfig} />
       </group>
     )
   }
@@ -325,46 +295,49 @@ const prédioAtual = []
             rotation={[0, parte.rotacaoExtra ?? 0, 0]}
             scale={parte.escalaVec.map(v => v * (parte.escalaExtra ?? 1))}
           >
-            <ModeloLoader 
-              config={parte} 
-              corFallback={corFallback}
-              graphicsConfig={graphicsConfig}
-            />
+            <ModeloLoader config={parte} corFallback={corFallback} graphicsConfig={graphicsConfig} />
           </group>
         ))}
       </group>
     )
   }
 
+  // 🚀 COMPOSTO ESCALÁVEL
   if (config?.tipo === 'compostoEscalavel') {
+    const altura = config.alturaAndar ?? 0.31
+  const baseY = config.partes[0]?.posY ?? 0   
+
     return (
       <group position={posicaoBase}>
-        {config.partes.map((parte, i) => (
-          <group
-            key={i}
-            position={parte.offset || [0, i*alturaAndar, 0]}
-            rotation={[0, parte.rotacaoExtra ?? 0, 0]}
-            scale={parte.escalaVec.map(v => v * (parte.escalaExtra ?? 1))}
-          >
-            <ModeloLoader 
-              config={parte} 
-              corFallback={corFallback}
-              graphicsConfig={graphicsConfig}
-            />
-          </group>
-        ))}
+        {config.partes.map((parte, i) => {
+          const off = parte.offset ?? [0, 0, 0]
+          const pos = [off[0], off[1] + altura * i , off[2]]
+
+          const scale = parte.escalaVec
+            ? parte.escalaVec.map(v => v * (parte.escalaExtra ?? 1))
+            : (parte.escala ?? 1) * (parte.escalaExtra ?? 1)
+
+          return (
+            <group
+              key={i}
+              position={pos}
+              rotation={[0, parte.rotacaoExtra ?? 0, 0]}
+              scale={scale}
+            >
+              <ModeloLoader config={parte} corFallback={corFallback} graphicsConfig={graphicsConfig} />
+            </group>
+          )
+        })}
       </group>
     )
   }
 
-
-
-
-
-  // Config inválida → fallback
+  // fallback
   return (
     <group position={posicaoBase}>
       <ModeloFallback cor={corFallback} config={graphicsConfig} />
     </group>
   )
 }
+
+
