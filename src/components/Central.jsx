@@ -6,15 +6,15 @@ import { EDIFICIO_PARA_MODELO, MODELOS } from "./BuildingModels"
 
 import { defineHex, Grid, spiral } from 'honeycomb-grid'
 import { useNotownStore } from "../store/notownStore"
-
+import ModalDiretory from "./ModalDiretory"
 // ─────────────────────────────────────────────────────────────
 //  Constantes
 // ─────────────────────────────────────────────────────────────
 const STATUS = {
-  dominado:   { label: 'Dominado',   cor: '#6411D9' },
+  dominado: { label: 'Dominado', cor: '#6411D9' },
   aprendendo: { label: 'Aprendendo', cor: '#A67BF5' },
-  novo:       { label: 'Novo',       cor: 'rgba(255,255,255,0.22)' },
-  revisar:    { label: 'Revisar',    cor: '#F27405' },
+  novo: { label: 'Novo', cor: 'rgba(255,255,255,0.22)' },
+  revisar: { label: 'Revisar', cor: '#F27405' },
 }
 const ORDEM_STATUS = ['dominado', 'aprendendo', 'novo', 'revisar']
 
@@ -340,6 +340,7 @@ export default function Central() {
   const [moveMode, setMoveMode] = useState(false)
   const [hoveredKey, setHoveredKey] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [modalDiretory, setModalDiretory] = useState(false)
 
   const SIDEBAR_W = useSidebarWidth()
   const larguraMapa = isSidebarOpen ? `calc(100% - ${SIDEBAR_W}px)` : '100%'
@@ -640,6 +641,17 @@ export default function Central() {
   return (
     <div className="h-screen w-full flex overflow-hidden bg-neutral-950">
 
+<button
+  className="fixed top-0 left-0 z-50 h-[100px] w-[100px] text-white"
+  onClick={() => setModalDiretory(true)}
+>
+  ativar diretorio
+</button>
+
+{modalDiretory && (
+  <ModalDiretory onClose={() => setModalDiretory(false)} />
+)}
+
       {/* `layout` removido: combinado com animação de width, ele escalava o canvas e distorcia o mapa */}
       <motion.div
         animate={{ width: larguraMapa }}
@@ -681,7 +693,7 @@ export default function Central() {
         initial={false}
         animate={{ width: isSidebarOpen ? SIDEBAR_W : 0, opacity: isSidebarOpen ? 1 : 0 }}
         transition={{
-          width:   { duration: 0.5, ease: easingLayout },
+          width: { duration: 0.5, ease: easingLayout },
           opacity: { duration: 0.35, ease: 'easeOut' },
         }}
         className="h-full shrink-0 overflow-hidden border-l border-[#6411D9]/30 bg-[#1a0640]/95 backdrop-blur-md"
@@ -726,6 +738,6 @@ export default function Central() {
         </div>
       </motion.aside>
 
-    </div>
+    </div >
   )
 }

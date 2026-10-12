@@ -322,7 +322,7 @@ const HexTile = React.memo(({
             graphicsConfig={config}
 
           />
-          {/* <Html position={[0, 1.8, 0]} center distanceFactor={8}>
+          <Html position={[0, 1.8, 0]} center distanceFactor={8}>
             <div style={{
               background: 'linear-gradient(135deg, rgba(76,20,169,0.95), rgba(30,8,80,0.95))',
               border: '1.5px solid rgba(199,159,255,0.6)',
@@ -335,7 +335,7 @@ const HexTile = React.memo(({
             }}>
               {building.quantidade} - {building.nome}
             </div>
-          </Html> */}
+          </Html>
         </>
       )}
 
