@@ -298,7 +298,7 @@ export function BuildingModel({
       <group position={posicaoBase}>
         {config.partes.map((parte, i) => {
           const off = parte.offset ?? [0, 0, 0]
-          const pos = [off[0], off[1] + altura * i, off[2]]
+          const pos = [off[0], off[1], off[2]]
 
           const scale = parte.escalaVec
             ? parte.escalaVec.map(v => v * (parte.escalaExtra ?? 1))

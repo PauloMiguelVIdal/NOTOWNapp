@@ -678,7 +678,7 @@ export default function Central() {
   }, [apartamentoSelecionadoId, predioAtivo])
 
   return (
-    <div className="h-screen w-full flex overflow-hidden bg-neutral-950">
+    <div className="h-full w-full rounded-2xl flex overflow-hidden bg-neutral-950">
 
       <button
         className="fixed top-3 left-3 z-50 h-[80px] w-[80px] flex items-center justify-center rounded-xl bg-black text-white hover:scale-[1.02] cursor-pointer border border-white/20"

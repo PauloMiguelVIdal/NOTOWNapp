@@ -2507,52 +2507,34 @@ export function resolverModelo(nomeEdificio, idDireto = null) {
 //  MODELO MODULAR — arrayPredio = [térreo, ...andares, cobertura]
 // ─────────────────────────────────────────────────────────────
 function montarPartesModular(quantidadeArquivos) {
+  const ALTURA = 0.31
   const partes = []
 
-  // base (terreno) — sempre no índice 0
-  partes.push({
-    modeloId: 569,
-    offset: [0, 0, 0],
-    escala: 1,
-    rotacao: 0,
-  })
+  // base
+  partes.push({ modeloId: 569, offset: [0, 0, 0], escala: 1, rotacao: 0 })
 
   if (quantidadeArquivos <= 0) return partes
 
-  // 1 arquivo → só térreo
-  if (quantidadeArquivos === 1) {
-    partes.push({
-      modeloId: 566,
-      offset: [0, 0.05, 0],
-      escala: 0.5,
-      rotacao: 0,
-    })
-    return partes
-  }
+  // térreo
+  partes.push({ modeloId: 566, offset: [0, 0.05, 0], escala: 0.5, rotacao: 0 })
 
-  // térreo (1º arquivo)
-  partes.push({
-    modeloId: 566,
-    offset: [0, 0.05, 0],
-    escala: 0.5,
-    rotacao: 0,
-  })
+  if (quantidadeArquivos === 1) return partes
 
-  // andares do meio (N = quantidade - 2)
+  // andares do meio — agora com offset vertical crescente
   const andaresNoMeio = quantidadeArquivos - 2
   for (let i = 0; i < andaresNoMeio; i++) {
     partes.push({
       modeloId: 567,
-      offset: [0, 0, 0],
+      offset: [0, 0.05 + ALTURA * (i + 1), 0],
       escala: 0.5,
       rotacao: 0,
     })
   }
 
-  // cobertura (último arquivo)
+  // cobertura
   partes.push({
     modeloId: 568,
-    offset: [0, 0, 0],
+    offset: [0, 0.05 + ALTURA * (andaresNoMeio + 1), 0],
     escala: 0.5,
     rotacao: 0,
   })

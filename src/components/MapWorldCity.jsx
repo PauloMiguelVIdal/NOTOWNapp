@@ -24,7 +24,7 @@ const CAMERA_DEFAULTS = {
   fov: 35,
   target: [0, 0, 0],
   minDistance: 3,
-  maxDistance: 20,
+  maxDistance: 2000,
   minPolarAngle: Math.PI / 4,
   maxPolarAngle: Math.PI / 2.8,
   autoRotate: false,
