@@ -1,4 +1,3 @@
-
 export const PACOTES = {
   'kenney-city': {
     label: 'Kenney City Kit',
@@ -79,7 +78,6 @@ export const PACOTES = {
     label: 'kenney city kit roads',
     basePath: '/models/kenney_city-kit-roads/GLB format/',
     colormap: '/models/kenney_city-kit-roads/GLB format/Textures/colormap.png'
-
   },
   'kenney_furniture-kit': {
     label: 'kenney_furniture-kit',
@@ -95,9 +93,7 @@ export const PACOTES = {
     label: 'kenney_modular-buildings',
     basePath: '/models/kenney_modular-buildings/GLB format/',
     colormap: '/models/kenney_modular-buildings/GLB format/Textures/colormap.png'
-    // colormap: 'null'
   },
-
   'custom': {
     label: 'Custom',
     basePath: '/models/custom/',
@@ -106,8 +102,6 @@ export const PACOTES = {
 }
 
 export const MODELOS = {
-  // ── ID 1 — Genérico / fallback ─────────────────────────────
-  // IMPORTANTE: aponta para hexagon-kit que sabemos que existe
   1: {
     label: 'Edifício Genérico',
     pacote: 'kenney_hexagon-kit',
@@ -117,7 +111,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: null,
   },
-
   2: {
     label: 'terrenoVerde',
     pacote: 'kenney_hexagon-kit',
@@ -172,6 +165,24 @@ export const MODELOS = {
     rotacao: 0,
     corTint: null,
   },
+  8: {
+    label: 'pomar',
+    tipo: 'composto',
+    partes: [
+      { modeloId: 2, offset: [0, 0, 0], escala: 1, rotacao: 0 },
+      { modeloId: 181, offset: [0.0, 0.05, -0.2], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [0.0, 0.05, -0.4], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [0.0, 0.05, 0.0], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [0.0, 0.05, 0.2], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [0.0, 0.05, 0.4], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [0.3, 0.05, -0.2], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [0.3, 0.05, 0.0], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [0.3, 0.05, 0.2], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [-0.3, 0.05, -0.2], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [-0.3, 0.05, 0.0], escala: 0.5, rotacao: Math.PI / 4 },
+      { modeloId: 181, offset: [-0.3, 0.05, 0.2], escala: 0.5, rotacao: Math.PI / 4 },
+    ]
+  },
   9: {
     label: 'depósito',
     pacote: 'kenney_hexagon-kit',
@@ -181,10 +192,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: null,
   },
-
-  // ── IDs 10-19 — Agricultura ───────────────────────────────
-
-  // ANTES: ID 10 era composto plantação
   10: {
     label: 'plantação',
     tipo: 'composto',
@@ -230,8 +237,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: [0.6, 0.9, 0.4],
   },
-  // ── ID 14 — celeiro simples (ANTES estava duplicado com eucalipto) ──
-
   15: {
     label: 'serraria',
     pacote: 'kenney_hexagon-kit',
@@ -241,7 +246,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: [0.6, 0.9, 0.4],
   },
-  // ── ID 16 — eucalipto composto (ERA o segundo ID 14 duplicado) ──
   16: {
     label: 'eucalipto',
     tipo: 'composto',
@@ -278,8 +282,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: null,
   },
-
-  // ── IDs 20-29 — Tecnologia ────────────────────────────────
   20: {
     label: 'Data Center',
     pacote: 'kenney-city',
@@ -307,8 +309,6 @@ export const MODELOS = {
     rotacao: Math.PI / 4,
     corTint: null,
   },
-
-  // ── IDs 30-39 — Indústria ─────────────────────────────────
   30: {
     label: 'Fábrica Pequena média',
     pacote: 'kenney-city',
@@ -327,8 +327,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: null,
   },
-
-  // ── IDs 40-49 — Comércio ──────────────────────────────────
   40: {
     label: 'Loja Pequena',
     pacote: 'kenney-city',
@@ -338,8 +336,6 @@ export const MODELOS = {
     rotacao: Math.PI / 2,
     corTint: null,
   },
-
-  // ── IDs 50-59 — Energia ───────────────────────────────────
   50: {
     label: 'Turbina Eólica',
     pacote: 'kenney-city',
@@ -349,8 +345,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: null,
   },
-
-  // ── IDs 60-94 — Industrial / Comercial ───────────────────
   60: {
     label: 'Fábrica pequena',
     pacote: 'kenney_city-kit-industrial_1.0',
@@ -684,7 +678,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: [1.0, 0.0, 0.0],
   },
-
   98: {
     label: 'comercio',
     pacote: 'kenney_city-kit-commercial_2.1',
@@ -766,7 +759,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: null,
   },
-
   107: {
     label: 'návio cargueiro',
     pacote: 'kenney_watercraft-pack',
@@ -812,7 +804,6 @@ export const MODELOS = {
     rotacao: 0,
     corTint: [0.0, 0.0, 0.5],
   },
-
   112: {
     label: 'camara',
     pacote: 'kenney_city-kit-suburban_20',
@@ -1011,17 +1002,12 @@ export const MODELOS = {
     arquivo: 'water.glb',
     escala: 1, posY: -0.06, rotacao: 0, corTint: null,
   },
-
   136: {
     label: 'barragem',
     pacote: 'kenney_nature-kit',
     arquivo: 'cliff_stone',
     escala: [2.25, 1, 1], posY: -0.06, rotacao: 1.29, corTint: null,
   },
-
-
-
-  // ── Primitivos / plantas ──────────────────────────────────
   180: {
     label: 'plantação grama',
     pacote: 'kenney_survival-kit',
@@ -1128,28 +1114,6 @@ export const MODELOS = {
       { modeloId: 3, offset: [0.35, 0.05, -0.6], escala: 0.50, rotacao: Math.PI / 0.354 },
       { modeloId: 3, offset: [0.13, 0.05, 0.18], escala: 0.50, rotacao: Math.PI / 0.315 },
       { modeloId: 3, offset: [-0.30, 0.05, -0.60], escala: 0.50, rotacao: Math.PI / 0.315 },
-
-    ]
-  },
-
-
-  // ── Compostos ─────────────────────────────────────────────
-  8: {
-    label: 'pomar',
-    tipo: 'composto',
-    partes: [
-      { modeloId: 2, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      { modeloId: 181, offset: [0.0, 0.05, -0.2], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [0.0, 0.05, -0.4], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [0.0, 0.05, 0.0], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [0.0, 0.05, 0.2], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [0.0, 0.05, 0.4], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [0.3, 0.05, -0.2], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [0.3, 0.05, 0.0], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [0.3, 0.05, 0.2], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [-0.3, 0.05, -0.2], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [-0.3, 0.05, 0.0], escala: 0.5, rotacao: Math.PI / 4 },
-      { modeloId: 181, offset: [-0.3, 0.05, 0.2], escala: 0.5, rotacao: Math.PI / 4 },
     ]
   },
   401: {
@@ -1179,7 +1143,6 @@ export const MODELOS = {
       { modeloId: 3, offset: [-0.30, 0.05, -0.60], escala: 0.50, rotacao: Math.PI / 0.315 },
     ]
   },
-  // ── ID 405 — granja completa (ANTES estava duplicado, versão simplificada sobrescrevia) ──
   405: {
     label: 'granja de aves',
     tipo: 'composto',
@@ -1492,7 +1455,6 @@ export const MODELOS = {
       { modeloId: 97, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 105, offset: [-0.24, 0.05, 0], escala: 0.4, rotacao: Math.PI / -0.4 },
       { modeloId: 106, offset: [-0.06, 0.05, 0.4], escala: 0.4, rotacao: Math.PI / -0.4 },
-
     ]
   },
   484: {
@@ -1509,10 +1471,8 @@ export const MODELOS = {
     partes: [
       { modeloId: 97, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 107, offset: [0, 0.05, 0.0], escala: 0.40, rotacao: 90 },
-      // { modeloId: 104, offset: [-0.06, 0.05, 0.6], escala: 0.4, rotacao: Math.PI / -0.4},
       { modeloId: 104, offset: [-0.14, 0.05, 0.1], escala: 0.4, rotacao: Math.PI / -0.4 },
       { modeloId: 104, offset: [-0.29, 0.05, 0.1], escala: 0.4, rotacao: Math.PI / -0.4 },
-      // { modeloId: 104, offset: [0.1, 0.05, 0.34], escala: 0.4, rotacao: Math.PI / -0.4},
     ]
   },
   486: {
@@ -1521,7 +1481,6 @@ export const MODELOS = {
     partes: [
       { modeloId: 97, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 92, offset: [0, 0.05, 0.0], escala: 0.40, rotacao: -30 },
-
     ]
   },
   487: {
@@ -1530,8 +1489,6 @@ export const MODELOS = {
     partes: [
       { modeloId: 97, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 109, offset: [0, 0.05, 0.0], escala: 0.40, rotacao: -30 },
-      // { modeloId: 104, offset: [-0.06, 0.05, 0.6], escala: 0.4, rotacao: Math.PI / -0.4},
-
     ]
   },
   488: {
@@ -1540,8 +1497,6 @@ export const MODELOS = {
     partes: [
       { modeloId: 111, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 112, offset: [0, 0.05, 0.0], escala: 0.40, rotacao: -30 },
-      // { modeloId: 104, offset: [-0.06, 0.05, 0.6], escala: 0.4, rotacao: Math.PI / -0.4},
-
     ]
   },
   489: {
@@ -1638,8 +1593,6 @@ export const MODELOS = {
     partes: [
       { modeloId: 111, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 122, offset: [-0.3, 0.05, 0.4], escala: 0.2, rotacao: Math.PI / -0.66 },
-      // { modeloId: 94, offset: [-0.3, 0.05, 0.4], escala: 0.2, rotacao: Math.PI / -0.66 },
-
     ]
   },
   501: {
@@ -1662,7 +1615,6 @@ export const MODELOS = {
     label: 'terraplanagem',
     tipo: 'composto',
     partes: [
-      // { modeloId: 111, offset: [0, 0.001, 0], escala: 1, rotacao: 0 },
       { modeloId: 124, offset: [0, 0, 0], escala: 1, rotacao: 0 },
     ]
   },
@@ -1672,10 +1624,8 @@ export const MODELOS = {
     partes: [
       { modeloId: 111, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 107, offset: [0, 0.05, 0.0], escala: 0.40, rotacao: 90 },
-      // { modeloId: 104, offset: [-0.06, 0.05, 0.6], escala: 0.4, rotacao: Math.PI / -0.4},
       { modeloId: 104, offset: [-0.14, 0.05, 0.1], escala: 0.4, rotacao: Math.PI / -0.4 },
       { modeloId: 104, offset: [-0.29, 0.05, 0.1], escala: 0.4, rotacao: Math.PI / -0.4 },
-      // { modeloId: 104, offset: [0.1, 0.05, 0.34], escala: 0.4, rotacao: Math.PI / -0.4},
     ]
   },
   505: {
@@ -1683,9 +1633,7 @@ export const MODELOS = {
     tipo: 'composto',
     partes: [
       { modeloId: 125, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      // { modeloId: 105, offset: [-0.24, 0.05, 0], escala: 0.4, rotacao: Math.PI / -0.4 },
       { modeloId: 188, offset: [-0.06, 0.05, 0.4], escala: 0.4, rotacao: Math.PI / -0.4 },
-
     ]
   },
   506: {
@@ -1693,7 +1641,6 @@ export const MODELOS = {
     tipo: 'composto',
     partes: [
       { modeloId: 111, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-
       { modeloId: 189, offset: [-1.45, 0.05, -1.1], escala: 3, rotacao: 0 },
     ]
   },
@@ -1703,7 +1650,6 @@ export const MODELOS = {
     partes: [
       { modeloId: 127, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 189, offset: [-1.45, 0.05, -1.1], escala: 3, rotacao: 0 },
-
     ]
   },
   508: {
@@ -1716,7 +1662,6 @@ export const MODELOS = {
       { modeloId: 128, offset: [0.3, 0.1, -0], escala: 0.3, rotacao: 4.6 },
       { modeloId: 128, offset: [0, 0.1, -0.4], escala: 0.3, rotacao: 4.6 },
       { modeloId: 128, offset: [0, 0.1, 0.4], escala: 0.3, rotacao: 4.6 },
-
     ]
   },
   509: {
@@ -1743,58 +1688,6 @@ export const MODELOS = {
       { modeloId: 105, offset: [0.0, 0.1, 0.0], escala: 0.4, rotacao: 26.7 },
     ]
   },
-  // 512: {
-  //   label: 'arm logistico',
-  //   tipo: 'composto',
-  //   partes: [
-  //     { modeloId: 127, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-  //     { modeloId: 72, offset: [0.0, 0.1, 0.0], escala: 0.4, rotacao: 26.7 },
-  //   ]
-  // },
-  // 513: {
-  //   label: 'Porto',
-  //   tamanho: 7,          // ← ativa o cluster
-  //   tipo: 'composto',
-  //   partes: [            // modelo do hex CENTRAL
-  //     { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-  //     { modeloId: 84, offset: [0, 0.05, 0], escala: 0.1, rotacao: 4.6 },
-  //   ],
-  //   satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-  //     { modeloId: 134 },  // vizinho 0: container
-  //     { modeloId: 134 },  // vizinho 1: container
-  //     { modeloId: 134 },  // vizinho 2: pátio
-  //     { modeloId: 134 },  // vizinho 3: pátio
-  //     { modeloId: 84 },  // vizinho 4: navio
-  //     { modeloId: 134 },  // vizinho 5: pátio
-  //   ]
-  // },
-
-  // 514: {
-  //   label: 'arm logistico',
-  //   tipo: 'composto',
-  //   partes: [
-  //     { modeloId: 127, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-  //     { modeloId: 133, offset: [0.0, 0.1, 0.0], escala: 0.8, rotacao: 90 },
-  //   ]
-  // },
-  //   515: {
-  //   label: 'Porto',
-  //   tamanho: 7,          // ← ativa o cluster
-  //   tipo: 'composto',
-  //   partes: [            // modelo do hex CENTRAL
-  //     { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-  //     { modeloId: 134, offset: [0, 0.05, 0], escala: 0.1, rotacao: 4.6 },
-  //   ],
-  //   satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-  //     { modeloId: 134 },  // vizinho 0: container
-  //     { modeloId: 134 },  // vizinho 1: container
-  //     { modeloId: 134 },  // vizinho 2: pátio
-  //     { modeloId: 134 },  // vizinho 3: pátio
-  //     { modeloId: 84 },  // vizinho 4: navio
-  //     { modeloId: 134 },  // vizinho 5: pátio
-  //   ]
-  // },
-
   516: {
     label: 'arm logistico',
     tipo: 'composto',
@@ -1805,19 +1698,19 @@ export const MODELOS = {
   },
   517: {
     label: 'usina',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
-    partes: [            // modelo do hex CENTRAL
+    partes: [
       { modeloId: 134, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 136, offset: [-0.12, 0.1, -0.4], escala: 0.4, rotacao: 30.44 },
     ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 516 },  // vizinho 5: pátio
-      { modeloId: 134 },  // vizinho 0: container
-      { modeloId: 518 },  // vizinho 1: container
-      { modeloId: 516 },  // vizinho 3: pátio
-      { modeloId: 134 },  // vizinho 2: pátio
-      { modeloId: 134 },  // vizinho 4: navio
+    satelites: [
+      { modeloId: 516 },
+      { modeloId: 134 },
+      { modeloId: 518 },
+      { modeloId: 516 },
+      { modeloId: 134 },
+      { modeloId: 134 },
     ]
   },
   518: {
@@ -1828,21 +1721,21 @@ export const MODELOS = {
       { modeloId: 130, offset: [-0.0, 0.1, -0.0], escala: 0.4, rotacao: 0 },
     ]
   },
-
   519: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
-    partes: [            // modelo do hex CENTRAL
+    partes: [
       { modeloId: 126, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      { modeloId: 72, offset: [0, 0.05, 0], escala: 0.40, rotacao: 26.7 },],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 520 },  // vizinho 0: container
-      { modeloId: 520 },  // vizinho 1: container
-      { modeloId: 521 },  // vizinho 5: pátio
-      { modeloId: 126 },  // vizinho 2: pátio
-      { modeloId: 126 },  // vizinho 4: navio
-      { modeloId: 521 },  // vizinho 3: pátio
+      { modeloId: 72, offset: [0, 0.05, 0], escala: 0.40, rotacao: 26.7 },
+    ],
+    satelites: [
+      { modeloId: 520 },
+      { modeloId: 520 },
+      { modeloId: 521 },
+      { modeloId: 126 },
+      { modeloId: 126 },
+      { modeloId: 521 },
     ]
   },
   520: {
@@ -1871,18 +1764,19 @@ export const MODELOS = {
   },
   523: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
-    partes: [            // modelo do hex CENTRAL
+    partes: [
       { modeloId: 126, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      { modeloId: 72, offset: [0, 0.05, 0], escala: 0.40, rotacao: 26.7 },],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 521 },  // vizinho 0: container
-      { modeloId: 521 },  // vizinho 1: container
-      { modeloId: 521 },  // vizinho 5: pátio
-      { modeloId: 126 },  // vizinho 2: pátio
-      { modeloId: 126 },  // vizinho 4: navio
-      { modeloId: 521 },  // vizinho 3: pátio
+      { modeloId: 72, offset: [0, 0.05, 0], escala: 0.40, rotacao: 26.7 },
+    ],
+    satelites: [
+      { modeloId: 521 },
+      { modeloId: 521 },
+      { modeloId: 521 },
+      { modeloId: 126 },
+      { modeloId: 126 },
+      { modeloId: 521 },
     ]
   },
   524: {
@@ -1929,33 +1823,35 @@ export const MODELOS = {
   },
   529: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
-    partes: [            // modelo do hex CENTRAL
+    partes: [
       { modeloId: 126, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      { modeloId: 527, offset: [-0.45, 0.05, 0.60], escala: 0.3, rotacao: Math.PI / 0.4 },],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 525 },   // topo 
-      { modeloId: 524 },  // topo esquerda
-      { modeloId: 524 },  //baixo esqueda
-      { modeloId: 528 },  //baixo 
-      { modeloId: 528 }, //baixo direita
-      { modeloId: 524 }, //topo direita
+      { modeloId: 527, offset: [-0.45, 0.05, 0.60], escala: 0.3, rotacao: Math.PI / 0.4 },
+    ],
+    satelites: [
+      { modeloId: 525 },
+      { modeloId: 524 },
+      { modeloId: 524 },
+      { modeloId: 528 },
+      { modeloId: 528 },
+      { modeloId: 524 },
     ]
   },
   530: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
-    partes: [            // modelo do hex CENTRAL
+    partes: [
       { modeloId: 126, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      { modeloId: 527, offset: [-0.45, 0.05, 0.60], escala: 0.3, rotacao: Math.PI / 0.4 },],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 524 },  // topo 
-      { modeloId: 524 },   // topo esquerda
-      { modeloId: 524 },  // 
-      { modeloId: 525 }, //baixo 
-      { modeloId: 525 }, //baixo direita
+      { modeloId: 527, offset: [-0.45, 0.05, 0.60], escala: 0.3, rotacao: Math.PI / 0.4 },
+    ],
+    satelites: [
+      { modeloId: 524 },
+      { modeloId: 524 },
+      { modeloId: 524 },
+      { modeloId: 525 },
+      { modeloId: 525 },
       { modeloId: 524 },
     ]
   },
@@ -1980,20 +1876,20 @@ export const MODELOS = {
   },
   533: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
     partes: [
       { modeloId: 111, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 531, offset: [-0.24, 0.05, 0], escala: 0.5, rotacao: Math.PI / 0.1 },
       { modeloId: 531, offset: [0.25, 0.05, 0], escala: 0.5, rotacao: Math.PI / 0.1 },
     ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 532 },  // topo 
-      { modeloId: 534 },   // topo esquerda
-      { modeloId: 501 },  // baixo esquerda
-      { modeloId: 532 }, //baixo 
-      { modeloId: 500 }, //baixo direita
-      { modeloId: 500 },  //topo direita
+    satelites: [
+      { modeloId: 532 },
+      { modeloId: 534 },
+      { modeloId: 501 },
+      { modeloId: 532 },
+      { modeloId: 500 },
+      { modeloId: 500 },
     ]
   },
   534: {
@@ -2026,36 +1922,36 @@ export const MODELOS = {
   },
   537: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
     partes: [
       { modeloId: 134, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 123, offset: [0.25, 0.05, 0], escala: 0.1, rotacao: 1.5 },
     ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 134 },  // topo 
-      { modeloId: 534 },   // topo esquerda
-      { modeloId: 111 },  // baixo esquerda
-      { modeloId: 134 }, //baixo 
-      { modeloId: 134 }, //baixo direita
-      { modeloId: 134 },  //topo direita
+    satelites: [
+      { modeloId: 134 },
+      { modeloId: 534 },
+      { modeloId: 111 },
+      { modeloId: 134 },
+      { modeloId: 134 },
+      { modeloId: 134 },
     ]
   },
   538: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
     partes: [
       { modeloId: 134, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 123, offset: [0.25, 0.05, 0], escala: 0.1, rotacao: 1.5 },
     ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 134 },  // topo 
-      { modeloId: 540 },   // topo esquerda
-      { modeloId: 540 },  // baixo esquerda
-      { modeloId: 134 }, //baixo 
-      { modeloId: 539 }, //baixo direita
-      { modeloId: 539 },  //topo direita
+    satelites: [
+      { modeloId: 134 },
+      { modeloId: 540 },
+      { modeloId: 540 },
+      { modeloId: 134 },
+      { modeloId: 539 },
+      { modeloId: 539 },
     ]
   },
   539: {
@@ -2066,7 +1962,6 @@ export const MODELOS = {
       { modeloId: 71, offset: [0, 0.05, 0], escala: 0.40, rotacao: 0 },
     ]
   },
-
   540: {
     label: 'fábrica a + terreno',
     tipo: 'composto',
@@ -2077,23 +1972,22 @@ export const MODELOS = {
   },
   541: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
     partes: [
       { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 531, offset: [-0.24, 0.05, 0], escala: 0.5, rotacao: Math.PI / 0.1 },
       { modeloId: 531, offset: [0.25, 0.05, 0], escala: 0.5, rotacao: Math.PI / 0.1 },
     ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 459 },  // topo 
-      { modeloId: 543 },   // topo esquerda
-      { modeloId: 543 },  // baixo esquerda
-      { modeloId: 544 }, //baixo 
-      { modeloId: 542 }, //baixo direita
-      { modeloId: 542 },  //topo direita
+    satelites: [
+      { modeloId: 459 },
+      { modeloId: 543 },
+      { modeloId: 543 },
+      { modeloId: 544 },
+      { modeloId: 542 },
+      { modeloId: 542 },
     ]
   },
-
   542: {
     label: 'fábrica a + terreno',
     tipo: 'composto',
@@ -2128,25 +2022,23 @@ export const MODELOS = {
       { modeloId: 531, offset: [0.25, 0.05, 0], escala: 0.5, rotacao: Math.PI / 0.1 },
     ]
   },
-
   546: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
     partes: [
       { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 68, offset: [0, 0.05, 0.0], escala: 0.40, rotacao: 90 },
     ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 459 },  // topo 
-      { modeloId: 459 },   // topo esquerda
-      { modeloId: 467 },  // baixo esquerda
-      { modeloId: 456 }, //baixo 
-      { modeloId: 467 }, //baixo direita
-      { modeloId: 459 },  //topo direita
+    satelites: [
+      { modeloId: 459 },
+      { modeloId: 459 },
+      { modeloId: 467 },
+      { modeloId: 456 },
+      { modeloId: 467 },
+      { modeloId: 459 },
     ]
   },
-
   547: {
     label: 'fábrica a + terreno',
     tipo: 'composto',
@@ -2168,36 +2060,36 @@ export const MODELOS = {
   },
   549: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
     partes: [
       { modeloId: 126, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 71, offset: [0, 0.05, 0], escala: 0.40, rotacao: 26.7 },
     ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 547 },  // topo 
-      { modeloId: 547 },   // topo esquerda
-      { modeloId: 547 },  // baixo esquerda
-      { modeloId: 547 }, //baixo 
-      { modeloId: 547 }, //baixo direita
-      { modeloId: 547 },  //topo direita
+    satelites: [
+      { modeloId: 547 },
+      { modeloId: 547 },
+      { modeloId: 547 },
+      { modeloId: 547 },
+      { modeloId: 547 },
+      { modeloId: 547 },
     ]
   },
   550: {
     label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    tamanho: 7,
     tipo: 'composto',
     partes: [
       { modeloId: 126, offset: [0, 0, 0], escala: 1, rotacao: 0 },
       { modeloId: 71, offset: [0, 0.05, 0], escala: 0.40, rotacao: 26.7 },
     ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 547 },  // topo 
-      { modeloId: 547 },   // topo esquerda
-      { modeloId: 547 },  // baixo esquerda
-      { modeloId: 547 }, //baixo 
-      { modeloId: 547 }, //baixo direita
-      { modeloId: 547 },  //topo direita
+    satelites: [
+      { modeloId: 547 },
+      { modeloId: 547 },
+      { modeloId: 547 },
+      { modeloId: 547 },
+      { modeloId: 547 },
+      { modeloId: 547 },
     ]
   },
   551: {
@@ -2221,28 +2113,11 @@ export const MODELOS = {
     arquivo: 'floorHalf.glb',
     escala: [0.8, 4, 0.8], posY: 1.5, rotacaoCorrecao: [Math.PI / 2, 0, 0], corTint: null,
   },
-
-
   554: {
     label: 'criação de ovinos',
     pacote: 'kenney_hexagon-kit',
     arquivo: 'building-sheep.glb',
     escala: 1, posY: -0.15, corTint: null,
-  },
-
-  555: {
-    label: 'criação de ovinos',
-    pacote: 'kenney_hexagon-kit',
-    arquivo: 'building-sheep.glb',
-    escala: 1, posY: -0.15, corTint: null,
-  },
-  556: {
-    label: 'fábrica a + terreno',
-    tipo: 'composto',
-    partes: [
-      { modeloId: 111, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      { modeloId: 119, offset: [0, 0, 0], escala: 1, rotacao: 1.6 },
-    ]
   },
   555: {
     label: 'somenteFoquete',
@@ -2253,20 +2128,11 @@ export const MODELOS = {
     ]
   },
   556: {
-    label: 'usina termelétrica combustíveis',
-    tamanho: 7,          // ← ativa o cluster
+    label: 'prédio alto padrão',
     tipo: 'composto',
     partes: [
-      { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      { modeloId: 68, offset: [0, 0.05, 0.0], escala: 0.40, rotacao: 90 },
-    ],
-    satelites: [         // um por vizinho, na ordem dos HEX_DIRECTIONS
-      { modeloId: 459 },  // topo 
-      { modeloId: 459 },   // topo esquerda
-      { modeloId: 467 },  // baixo esquerda
-      { modeloId: 456 }, //baixo 
-      { modeloId: 467 }, //baixo direita
-      { modeloId: 459 },  //topo direita
+      { modeloId: 111, offset: [0, 0, 0], escala: 1, rotacao: 0 },
+      { modeloId: 119, offset: [0, 0, 0], escala: 1, rotacao: 1.6 },
     ]
   },
   557: {
@@ -2297,16 +2163,9 @@ export const MODELOS = {
     corTint: null,
   },
   560: {
-    label: 'foguete completo',
+    label: 'predio completo',
     tipo: 'compostoEscalavel',
     partes: [
-      // { modeloId: 65, offset: [0, 0, 0], escala: 1, rotacao: 0 },
-      // { modeloId: 556, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
-      // { modeloId: 557, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
-      // { modeloId: 557, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
-      // { modeloId: 557, offset: [0, 0.2, 0], escala: 0.3, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, -0.31 , 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 564, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 565, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
@@ -2314,23 +2173,10 @@ export const MODELOS = {
       { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 561, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
       { modeloId: 563, offset: [0, 0, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.62, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.93, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 561, offset: [0, 0.31, 0], escala: 0.5, rotacao: 0.2 },
-      // { modeloId: 82, offset: [0, 0, 0], escala: 0.3, rotacao: 0.2 },
-      // { modeloId: 83, offset: [0, 0, 0], escala: 0.3, rotacao: 0.2 },
     ]
   },
   561: {
-    label: 'andar',
+    label: 'andar modular',
     pacote: 'kenney_modular-buildings',
     arquivo: 'building-windows-sills',
     escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
@@ -2342,41 +2188,58 @@ export const MODELOS = {
     escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
   },
   563: {
-    label: 'andar',
+    label: 'cobertura modular',
     pacote: 'kenney_modular-buildings',
     arquivo: 'roof-flat-detail-b',
     escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
   },
   564: {
-    label: 'andar',
+    label: 'andar modular',
     pacote: 'kenney_modular-buildings',
     arquivo: 'building-sample-tower-b',
     escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
   },
   565: {
-    label: 'andar',
+    label: 'térreo modular',
     pacote: 'kenney_modular-buildings',
     arquivo: 'building-window-door-window-round',
-    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5,     corTint: [2, 0.9, 0.4],
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
   },
-
-
+  // 🔥 NOVO — base terreno modular
+  566: {
+    label: 'térreo modular (arquivo)',
+    pacote: 'kenney_modular-buildings',
+    arquivo: 'building-window-door-window-round',
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
+  },
+  567: {
+    label: 'andar modular (arquivo)',
+    pacote: 'kenney_modular-buildings',
+    arquivo: 'building-windows-sills',
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
+  },
+  568: {
+    label: 'cobertura modular (arquivo)',
+    pacote: 'kenney_modular-buildings',
+    arquivo: 'roof-flat-detail-b',
+    escala: [1, 1, 1], posY: -0.06, rotacao: 4.5, corTint: [2, 0.9, 0.4],
+  },
+  569: {
+    label: 'base terreno modular (arquivo)',
+    pacote: 'kenney_hexagon-kit',
+    arquivo: 'grass.glb',
+    escala: [1, 1, 1], posY: -0.15, rotacao: 0, corTint: [0.6, 0.9, 0.4],
+  },
 }
 
-
-// ─────────────────────────────────────────────────────────────
-//  SEÇÃO 3 — MAPEAMENTO edifício → modelo
-// ─────────────────────────────────────────────────────────────
-
 export const EDIFICIO_PARA_MODELO = {
-  // ── Agricultura ───────────────────────────────────────────
   'Plantação De Grãos': 10,
   'Fazenda Administrativa': 11,
   'Armazém': 11,
   'Plantação De Vegetais': 10,
   'Pomares': 8,
   'Silo': 401,
-  'Plantação De Eucalipto': 16,   // ← era 14, agora aponta para ID 16 (eucalipto composto)
+  'Plantação De Eucalipto': 16,
   'Plantação De Plantas Medicinais': 10,
   'Campo De Estocagem': 193,
   'Fazenda De Vacas': 404,
@@ -2390,8 +2253,6 @@ export const EDIFICIO_PARA_MODELO = {
   'Depósito De Resíduos Orgânicos': 9,
   'Cooperativa Agrícola': 18,
   'Centro De Comércio De Plantações': 19,
-
-  // ── Indústria ─────────────────────────────────────────────
   "Fábrica De Móveis": 450,
   "Fábrica De Rações": 450,
   "Fábrica De Embalagens": 450,
@@ -2434,8 +2295,6 @@ export const EDIFICIO_PARA_MODELO = {
   "Fábrica De Foguetes": 546,
   "Fábrica De Aeronaves": 541,
   "Estaleiro": 538,
-
-  // ── Tecnologia ────────────────────────────────────────────
   "Startup": 470,
   "Servidor Em Nuvem": 471,
   "Data Center": 472,
@@ -2463,9 +2322,6 @@ export const EDIFICIO_PARA_MODELO = {
   "Centro De Pesquisa Em Materiais": 473,
   "Centro De Pesquisa Em Robótica": 473,
   "Centro De Pesquisa Em IA": 473,
-
-
-
   "Feira": 475,
   "Loja De Móveis": 476,
   "Restaurante": 477,
@@ -2497,10 +2353,6 @@ export const EDIFICIO_PARA_MODELO = {
   "Concessionária De Veículos": 484,
   "Shopping Popular": 486,
   "Shopping Center": 487,
-
-
-
-
   "Cartório E Licenças": 490,
   "Terraplanagem E Pavimentação": 491,
   "Construtora De Pequenas Obras": 489,
@@ -2522,9 +2374,6 @@ export const EDIFICIO_PARA_MODELO = {
   "Centro De Coleta De Biomassa": 505,
   "Tanque De Armazenamento De Fluidos": 506,
   "Plataforma De Petróleo": 504,
-
-
-
   "Subestação De Energia": 134,
   "Rede De Distribuição Elétrica": 517,
   "Usina Solar": 513,
@@ -2549,8 +2398,6 @@ export const EDIFICIO_PARA_MODELO = {
   "PredioCompleto": 560,
   "Node": 560,
   "React": 560,
-  
-
 }
 
 export const PORTES_ORDENADOS = [
@@ -2566,79 +2413,31 @@ export const PORTES_ORDENADOS = [
   'Mega Holding',
 ]
 
-// ─────────────────────────────────────────────────────────────
-//  MODELOS_SEDE — edifício central por porte
-// ─────────────────────────────────────────────────────────────
 export const MODELOS_SEDE = {
-  'Micro Empresa': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-c.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Sociedade Limitada': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-d.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Empresa Regional': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-a.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Companhia Local': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-f.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Empresa Estadual': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-i.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Companhia Nacional': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-j.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Corporação Multissetorial': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-l.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Grupo Empresarial': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-m.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Conglomerado Global': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-skyscraper-a.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
-  'Mega Holding': {
-    pacote: 'kenney_city-kit-commercial_2.1',
-    arquivo: 'building-skyscraper-d.glb',
-    escala: 0.7, posY: 0, rotacao: 1.5, corTint: null,
-  },
+  'Micro Empresa': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-c.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Sociedade Limitada': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-d.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Empresa Regional': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-a.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Companhia Local': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-f.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Empresa Estadual': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-i.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Companhia Nacional': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-j.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Corporação Multissetorial': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-l.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Grupo Empresarial': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-m.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Conglomerado Global': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-skyscraper-a.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
+  'Mega Holding': { pacote: 'kenney_city-kit-commercial_2.1', arquivo: 'building-skyscraper-d.glb', escala: 0.7, posY: 0, rotacao: 1.5, corTint: null },
 }
 
-// 🔥 CORRIGIDO: agora usa o porte recebido (fallback para 'Micro Empresa')
 export function resolverModeloSede(classificacaoPorte) {
   const edificio = MODELOS_SEDE[classificacaoPorte] || MODELOS_SEDE['Micro Empresa']
   const pacoteEdificio = PACOTES[edificio.pacote]
 
-  // Base fixa — modelo 95 (stone terreno base)
   const base = MODELOS[95]
   const pacoteBase = PACOTES[base.pacote]
   const sBase = base.escala ?? 1
-
-  // Edifício do topo
   const sEdificio = edificio.escala ?? 0.4
 
   return {
     tipo: 'composto',
     partes: [
-      // ── camada 1: terreno base ──
       {
         glbPath: pacoteBase.basePath + base.arquivo,
         colormap: pacoteBase.colormap,
@@ -2650,7 +2449,6 @@ export function resolverModeloSede(classificacaoPorte) {
         escalaExtra: 1,
         rotacaoExtra: 0,
       },
-      // ── camada 2: edifício do porte ──
       {
         glbPath: pacoteEdificio.basePath + edificio.arquivo,
         colormap: pacoteEdificio.colormap,
@@ -2666,25 +2464,17 @@ export function resolverModeloSede(classificacaoPorte) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-//  HELPER — resolve config completa de um edifício pelo nome
-// ─────────────────────────────────────────────────────────────
-
-
-// DEPOIS:
 export function resolverModelo(nomeEdificio, idDireto = null) {
   const modeloId = idDireto ?? EDIFICIO_PARA_MODELO[nomeEdificio] ?? 1
   const modelo = MODELOS[modeloId] ?? MODELOS[1]
 
-  // COMPOSTO (normal ou escalável)
   if (modelo.tipo === 'composto' || modelo.tipo === 'compostoEscalavel') {
     return {
       tipo: modelo.tipo,
-      alturaAndar: modelo.alturaAndar,   // passa adiante se existir
+      alturaAndar: modelo.alturaAndar,
       partes: modelo.partes.map(parte => {
         const sub = MODELOS[parte.modeloId]
         const pacote = PACOTES[sub.pacote]
-
         return {
           ...sub,
           glbPath: pacote.basePath + sub.arquivo,
@@ -2700,7 +2490,6 @@ export function resolverModelo(nomeEdificio, idDireto = null) {
     }
   }
 
-  // SIMPLES
   const pacote = PACOTES[modelo.pacote]
   return {
     tipo: 'simples',
@@ -2711,5 +2500,86 @@ export function resolverModelo(nomeEdificio, idDireto = null) {
     escalaVec: Array.isArray(modelo.escala)
       ? modelo.escala
       : [modelo.escala, modelo.escala, modelo.escala],
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  MODELO MODULAR — arrayPredio = [térreo, ...andares, cobertura]
+// ─────────────────────────────────────────────────────────────
+function montarPartesModular(quantidadeArquivos) {
+  const partes = []
+
+  // base (terreno) — sempre no índice 0
+  partes.push({
+    modeloId: 569,
+    offset: [0, 0, 0],
+    escala: 1,
+    rotacao: 0,
+  })
+
+  if (quantidadeArquivos <= 0) return partes
+
+  // 1 arquivo → só térreo
+  if (quantidadeArquivos === 1) {
+    partes.push({
+      modeloId: 566,
+      offset: [0, 0.05, 0],
+      escala: 0.5,
+      rotacao: 0,
+    })
+    return partes
+  }
+
+  // térreo (1º arquivo)
+  partes.push({
+    modeloId: 566,
+    offset: [0, 0.05, 0],
+    escala: 0.5,
+    rotacao: 0,
+  })
+
+  // andares do meio (N = quantidade - 2)
+  const andaresNoMeio = quantidadeArquivos - 2
+  for (let i = 0; i < andaresNoMeio; i++) {
+    partes.push({
+      modeloId: 567,
+      offset: [0, 0, 0],
+      escala: 0.5,
+      rotacao: 0,
+    })
+  }
+
+  // cobertura (último arquivo)
+  partes.push({
+    modeloId: 568,
+    offset: [0, 0, 0],
+    escala: 0.5,
+    rotacao: 0,
+  })
+
+  return partes
+}
+
+export function resolverModeloModular(quantidadeArquivos) {
+  const partesCruas = montarPartesModular(quantidadeArquivos)
+
+  return {
+    tipo: 'compostoEscalavel',
+    alturaAndar: 0.31,
+    partes: partesCruas.map(parte => {
+      const sub = MODELOS[parte.modeloId]
+      const pacote = PACOTES[sub.pacote]
+      return {
+        ...sub,
+        glbPath: pacote.basePath + sub.arquivo,
+        colormap: pacote.colormap,
+        escalaVec: Array.isArray(sub.escala)
+          ? sub.escala
+          : [sub.escala, sub.escala, sub.escala],
+        offset: parte.offset ?? [0, 0, 0],
+        escalaExtra: parte.escala ?? 1,
+        rotacaoExtra: parte.rotacao ?? 0,
+      }
+    })
   }
 }

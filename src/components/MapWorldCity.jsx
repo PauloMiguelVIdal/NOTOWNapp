@@ -315,8 +315,9 @@ const HexTile = React.memo(({
       {building && (
         <>
           <BuildingModel
-            nomeEdificio={building.nome}
+            nomeEdificio={null}
             andares={building.quantidade}
+            quantidadeArquivos={building.quantidade}           
             corFallback={SETOR_CONFIG[building.setor]?.cor4 || '#888888'}
             posicaoBase={[0, 0.22, 0]}
             graphicsConfig={config}

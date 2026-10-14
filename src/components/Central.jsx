@@ -1,12 +1,13 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from "react"
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 
 import MapWorld from "./MapWorldCity"
 import { EDIFICIO_PARA_MODELO, MODELOS } from "./BuildingModels"
-
 import { defineHex, Grid, spiral } from 'honeycomb-grid'
 import { useNotownStore } from "../store/notownStore"
-import ModalDiretory from "./ModalDiretory"
+import ModalDirectory from "./modalDiretory"
+import { LucideFolderCog } from "lucide-react"
+
 // ─────────────────────────────────────────────────────────────
 //  Constantes
 // ─────────────────────────────────────────────────────────────
@@ -17,17 +18,12 @@ const STATUS = {
   revisar: { label: 'Revisar', cor: '#F27405' },
 }
 const ORDEM_STATUS = ['dominado', 'aprendendo', 'novo', 'revisar']
+const COLS = 5
 
-const COLS = 5 // máximo de apartamentos por andar
+// Extensões que viram "andares"
+const EXT_VALIDAS = new Set(['.js', '.jsx', '.ts', '.tsx', '.json', '.md', '.css', '.html'])
 
-// Fora do componente: referência estável (antes era recriado a cada render)
-const PASTAS_ARQUIVOS = [
-  { nome: 'Node', quantidade: 2 },
-  { nome: 'React', quantidade: 2 },
-  { nome: 'PredioCompleto', quantidade: 1 },
-]
-
-// Vizinhos axiais de um hex (usado só por clusters)
+// Vizinhos axiais de um hex
 const HEX_DIRECTIONS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]]
 const vizinhosDeHex = (q, r) => HEX_DIRECTIONS.map(([dq, dr]) => `${q + dq},${r + dr}`)
 
@@ -59,33 +55,76 @@ function calcStats(cards) {
   return s
 }
 
-function gerarPredio({ nome, andares, arquivosBase = [] }) {
-  const id = `${nome}-${andares}`
+function hashStr(str) {
+  let h = 0
+  for (let i = 0; i < str.length; i++) {
+    h = (h * 31 + str.charCodeAt(i)) | 0
+  }
+  return Math.abs(h)
+}
 
-  const listaAndares = Array.from({ length: andares }, (_, i) => {
+// ─────────────────────────────────────────────────────────────
+//  Gera um prédio a partir de uma pasta real de arquivos
+//  1 arquivo = 1 andar
+// ─────────────────────────────────────────────────────────────
+function gerarPredioDeArquivos({ nome, arquivos }) {
+  const id = `predio-${nome}`
+
+  const listaAndares = arquivos.map((fileInfo, i) => {
     const numero = i + 1
-    const qtd = 2 + ((i * 7 + nome.length) % 4)
-    const base = arquivosBase[i % Math.max(arquivosBase.length, 1)] ?? `${nome.toLowerCase()}-${numero}`
-    const ext = ['.js', '.jsx', '.ts', '.tsx', '.json', '.md'][i % 6]
+    const seed = hashStr(fileInfo.path)
+    const qtd = 2 + (seed % 4)
 
-    const cards = Array.from({ length: qtd }, (_, j) => ({
-      id: `${id}-andar${numero}-card${j + 1}`,
-      numero: `${numero}${String(j + 1).padStart(2, '0')}`,
-      pergunta: `Flashcard ${j + 1} · ${base}`,
-      status: ORDEM_STATUS[(i * 3 + j * 5 + nome.length) % 4],
-    }))
+    const cards = Array.from({ length: qtd }, (_, j) => {
+      const cardSeed = hashStr(`${fileInfo.path}-${j}`)
+      return {
+        id: `${id}-andar${numero}-card${j + 1}`,
+        numero: `${numero}${String(j + 1).padStart(2, '0')}`,
+        pergunta: `Flashcard ${j + 1} · ${fileInfo.name}`,
+        status: ORDEM_STATUS[cardSeed % 4],
+      }
+    })
 
     return {
       id: `${id}-andar${numero}`,
       numero,
-      arquivo: `${base}${ext}`,
+      arquivo: fileInfo.name,
+      caminho: fileInfo.path,
       apartamentos: cards,
       stats: calcStats(cards),
     }
   })
 
   return {
-    id, nome, andares: listaAndares,
+    id,
+    nome,
+    andares: listaAndares,
+    stats: calcStats(listaAndares.flatMap(a => a.apartamentos)),
+  }
+}
+
+function gerarPredioFake({ nome, andares }) {
+  const id = `fake-${nome}`
+  const listaAndares = Array.from({ length: andares }, (_, i) => {
+    const numero = i + 1
+    const cards = Array.from({ length: 3 }, (_, j) => ({
+      id: `${id}-andar${numero}-card${j + 1}`,
+      numero: `${numero}${String(j + 1).padStart(2, '0')}`,
+      pergunta: `Placeholder ${j + 1} · ${nome}`,
+      status: 'novo',
+    }))
+    return {
+      id: `${id}-andar${numero}`,
+      numero,
+      arquivo: `${nome.toLowerCase()}-${numero}.js`,
+      apartamentos: cards,
+      stats: calcStats(cards),
+    }
+  })
+  return {
+    id,
+    nome,
+    andares: listaAndares,
     stats: calcStats(listaAndares.flatMap(a => a.apartamentos)),
   }
 }
@@ -106,7 +145,7 @@ function BarraStatus({ stats, className = 'h-1.5' }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-//  Janela (apartamento = flashcard) — proporção fixa
+//  Janela (apartamento = flashcard)
 // ─────────────────────────────────────────────────────────────
 function Janela({ apt, selecionado, onClick }) {
   return (
@@ -121,19 +160,17 @@ function Janela({ apt, selecionado, onClick }) {
         'bg-white/[0.04]',
       ].join(' ')}
     >
-      {/* janela */}
       <span
         className="absolute inset-x-[18%] top-[14%] h-[38%] rounded-[3px] border border-black/20"
         style={{ background: STATUS[apt.status].cor }}
       />
-      {/* porta */}
       <span className="absolute bottom-0 left-1/2 h-[30%] w-[26%] -translate-x-1/2 rounded-t-[3px] border border-b-0 border-black/30 bg-[#350973]" />
     </button>
   )
 }
 
 // ─────────────────────────────────────────────────────────────
-//  Fachada do prédio (pasta) — 1 bloco = 1 andar (arquivo)
+//  Fachada do prédio
 // ─────────────────────────────────────────────────────────────
 function FachadaPredio({ predio, andarAbertoId, aptSelId, onAndar, onApt }) {
   const refs = useRef({})
@@ -144,7 +181,6 @@ function FachadaPredio({ predio, andarAbertoId, aptSelId, onAndar, onApt }) {
     }
   }, [andarAbertoId])
 
-  // topo do prédio primeiro (sem flex-col-reverse, para o scroll ser previsível)
   const andaresDeCima = useMemo(() => [...predio.andares].reverse(), [predio])
 
   return (
@@ -166,6 +202,7 @@ function FachadaPredio({ predio, andarAbertoId, aptSelId, onAndar, onApt }) {
               <button
                 onClick={() => onAndar(a.id)}
                 className="mb-1.5 flex w-full items-center gap-2 text-left"
+                title={a.caminho || a.arquivo}
               >
                 <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-white/10 text-[10px] font-bold text-white/70">
                   {a.numero}
@@ -199,7 +236,6 @@ function FachadaPredio({ predio, andarAbertoId, aptSelId, onAndar, onApt }) {
         })}
       </div>
 
-      {/* térreo */}
       <div className="flex h-8 items-end justify-center border border-t-0 border-[#6411D9]/50 bg-[#1a0640]">
         <div className="h-6 w-8 rounded-t-md bg-[#F27405]/70" />
       </div>
@@ -208,7 +244,7 @@ function FachadaPredio({ predio, andarAbertoId, aptSelId, onAndar, onApt }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-//  Painel analítico (esquerda)
+//  Painel analítico
 // ─────────────────────────────────────────────────────────────
 function RankList({ titulo, cor, itens, onAbrir }) {
   if (!itens.length) return null
@@ -241,7 +277,7 @@ function RankList({ titulo, cor, itens, onAbrir }) {
 
 function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAndar, apartamentoSelecionado }) {
   const { prioridade, comecar, fortes } = useMemo(() => {
-    const a = predioAtivo.andares
+    const a = predioAtivo?.andares ?? []
     const top = (arr, n) => arr.slice(0, n)
     const maxRev = Math.max(1, ...a.map(x => x.stats.revisar))
     const maxNovo = Math.max(1, ...a.map(x => x.stats.novo))
@@ -257,6 +293,14 @@ function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAnda
         .map(andar => ({ andar, valor: andar.stats.pct, max: 100, rotulo: `${andar.stats.pct}%` })),
     }
   }, [predioAtivo])
+
+  if (!predioAtivo) {
+    return (
+      <div className="flex h-full w-[320px] shrink-0 items-center justify-center border-r border-[#6411D9]/25 text-sm text-white/40">
+        Nenhum diretório carregado
+      </div>
+    )
+  }
 
   const s = predioAtivo.stats
 
@@ -281,12 +325,12 @@ function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAnda
         </div>
 
         <div className="flex items-end justify-between">
-          <div>
+          <div className="min-w-0">
             <div className="text-[10px] uppercase tracking-widest text-white/35">Pasta · análise</div>
-            <h2 className="text-lg font-semibold leading-tight text-white">{predioAtivo.nome}</h2>
+            <h2 className="truncate text-lg font-semibold leading-tight text-white">{predioAtivo.nome}</h2>
             <p className="mt-0.5 text-[11px] text-white/40">{predioAtivo.andares.length} arquivos · {s.total} flashcards</p>
           </div>
-          <div className="text-right">
+          <div className="shrink-0 text-right">
             <div className="text-2xl font-bold tabular-nums text-white">{s.pct}%</div>
             <div className="text-[10px] uppercase tracking-wide text-white/35">dominado</div>
           </div>
@@ -335,58 +379,77 @@ function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAnda
 //  Central
 // ═════════════════════════════════════════════════════════════
 export default function Central() {
-
   const [selectedKey, setSelectedKey] = useState(null)
   const [moveMode, setMoveMode] = useState(false)
   const [hoveredKey, setHoveredKey] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [modalDiretory, setModalDiretory] = useState(false)
+  const [arquivosMap, setArquivosMap] = useState(null)
 
   const SIDEBAR_W = useSidebarWidth()
   const larguraMapa = isSidebarOpen ? `calc(100% - ${SIDEBAR_W}px)` : '100%'
 
   const posicionarCarta = useNotownStore((s) => s.posicionarCartaPatrimonio)
 
-  const raioMapa = 4
-  const HEX_SIZE = 0.6
-  const hexGrid = useMemo(() => {
-    const Tile = defineHex({ dimensions: HEX_SIZE, orientation: 'pointy' })
-    return Array.from(new Grid(Tile, spiral({ center: [0, 0], radius: raioMapa })))
-  }, [raioMapa])
+  // ─── Diretório selecionado ───
+  const handleDiretorioSelecionado = useCallback((map) => {
+    setArquivosMap(map)
+    console.log("Arquivos carregados:", map.size)
+  }, [])
 
-  const hexMap = useMemo(() => {
-    const map = new Map()
-    hexGrid.forEach((h) => map.set(`${h.q},${h.r}`, h))
-    return map
-  }, [hexGrid])
+  // ─── Prédios: do diretório real, ou fallback fake ───
+  const predios = useMemo(() => {
+    if (!arquivosMap || arquivosMap.size === 0) {
+      return [
+        gerarPredioFake({ nome: 'Node', andares: 25 }),
+        gerarPredioFake({ nome: 'React', andares: 25 }),
+        gerarPredioFake({ nome: 'PredioCompleto', andares: 25 }),
+      ]
+    }
 
-  const predios = useMemo(() => ([
-    gerarPredio({
-      nome: 'Node',
-      andares: 25,
-      arquivosBase: ['server', 'index', 'router', 'controller', 'middleware'],
-    }),
-    gerarPredio({
-      nome: 'React',
-      andares: 25,
-      arquivosBase: ['App', 'Main', 'Header', 'Footer', 'Sidebar'],
-    }),
-    gerarPredio({
-      nome: 'PredioCompleto',
-      andares: 25,
-      arquivosBase: ['Bootstrap', 'Manifest', 'Config', 'Env', 'Readme'],
-    }),
-  ]), [])
+    const porPasta = new Map()
+    for (const [, info] of arquivosMap) {
+      if (info.ext && !EXT_VALIDAS.has(info.ext)) continue
 
-  const [predioSelecionadoId, setPredioSelecionadoId] = useState(predios[0]?.id ?? null)
+      const partes = info.path.split("/")
+      const primeiraPasta = partes.length > 1 ? partes[0] : "(raiz)"
 
-  const predioAtivo = useMemo(
-    () => predios.find(p => p.id === predioSelecionadoId) ?? predios[0],
-    [predios, predioSelecionadoId]
-  )
+      if (!porPasta.has(primeiraPasta)) porPasta.set(primeiraPasta, [])
+      porPasta.get(primeiraPasta).push(info)
+    }
 
+    const entradas = Array.from(porPasta.entries())
+      .filter(([, arquivos]) => arquivos.length > 0)
+      .sort(([a], [b]) => a.localeCompare(b))
+
+    if (entradas.length === 0) {
+      return [gerarPredioFake({ nome: 'Vazio', andares: 1 })]
+    }
+
+    return entradas.map(([nome, arquivos]) =>
+      gerarPredioDeArquivos({ nome, arquivos })
+    )
+  }, [arquivosMap])
+
+  // ─── Predio ativo: sincroniza automaticamente quando predios muda ───
+  const [predioSelecionadoId, setPredioSelecionadoId] = useState(null)
   const [andarAbertoId, setAndarAbertoId] = useState(null)
   const [apartamentoSelecionadoId, setApartamentoSelecionadoId] = useState(null)
+
+  useEffect(() => {
+    if (predios.length === 0) return
+    const existe = predios.some(p => p.id === predioSelecionadoId)
+    if (!existe) {
+      setPredioSelecionadoId(predios[0].id)
+      setAndarAbertoId(null)
+      setApartamentoSelecionadoId(null)
+    }
+  }, [predios, predioSelecionadoId])
+
+  const predioAtivo = useMemo(
+    () => predios.find(p => p.id === predioSelecionadoId) ?? predios[0] ?? null,
+    [predios, predioSelecionadoId]
+  )
 
   const handleToggleAndar = useCallback((andarId) => {
     setAndarAbertoId(prev => prev === andarId ? null : andarId)
@@ -410,13 +473,29 @@ export default function Central() {
 
   // ─── Edifícios no mapa ───
   const edificiosAtivos = useMemo(() => {
-    return PASTAS_ARQUIVOS.map((pasta, i) => ({
-      id: `${pasta.nome}-${i}`,
-      nome: pasta.nome,
+    const lista = predios.map((p) => ({
+      id: p.id,
+      nome: p.nome,
       setor: 'tecnologia',
-      quantidade: pasta.quantidade,
+      quantidade: p.andares.length,   // 🔥 passa a quantidade de arquivos
     }))
-  }, [])
+    console.log('🏢 edificiosAtivos:', lista)
+    return lista
+  }, [predios])
+
+  // ─── Grid hexagonal ───
+  const raioMapa = 4
+  const HEX_SIZE = 0.6
+  const hexGrid = useMemo(() => {
+    const Tile = defineHex({ dimensions: HEX_SIZE, orientation: 'pointy' })
+    return Array.from(new Grid(Tile, spiral({ center: [0, 0], radius: raioMapa })))
+  }, [raioMapa])
+
+  const hexMap = useMemo(() => {
+    const map = new Map()
+    hexGrid.forEach((h) => map.set(`${h.q},${h.r}`, h))
+    return map
+  }, [hexGrid])
 
   const posicoes = useMemo(() => {
     const livres = hexGrid
@@ -435,12 +514,6 @@ export default function Central() {
     edificiosAtivos.forEach((e) => map.set(e.id, e))
     return map
   }, [edificiosAtivos])
-
-  useEffect(() => {
-    console.log('edificiosAtivos:', edificiosAtivos)
-    console.log('primeiro:', edificiosAtivos[0])
-    console.log('edificioPorId size:', edificioPorId.size)
-  }, [edificiosAtivos, edificioPorId])
 
   const satelites = useMemo(() => {
     const mapa = {}
@@ -469,27 +542,15 @@ export default function Central() {
 
   const mapWrapperRef = useRef(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isPortrait, setIsPortrait] = useState(
-    typeof window !== 'undefined' ? window.innerHeight > window.innerWidth : true
-  )
-  const [mapReady, setMapReady] = useState(false)
   const [mapTimeoutId, setMapTimeoutId] = useState(null)
 
   const handleMapReady = useCallback(() => {
-    const id = setTimeout(() => setMapReady(true), 400)
-    setMapTimeoutId(id)
+    const id = setTimeout(() => setMapTimeoutId(id), 400)
   }, [])
 
   useEffect(() => {
     return () => { if (mapTimeoutId) clearTimeout(mapTimeoutId) }
   }, [mapTimeoutId])
-
-  useEffect(() => {
-    const mq = window.matchMedia('(orientation: portrait)')
-    const handleOrientation = (e) => setIsPortrait(e.matches)
-    mq.addEventListener('change', handleOrientation)
-    return () => mq.removeEventListener('change', handleOrientation)
-  }, [])
 
   useEffect(() => {
     const handleFsChange = () => {
@@ -504,27 +565,6 @@ export default function Central() {
     }
     document.addEventListener('fullscreenchange', handleFsChange)
     return () => document.removeEventListener('fullscreenchange', handleFsChange)
-  }, [])
-
-  const toggleFullscreen = useCallback(async () => {
-    const el = mapWrapperRef.current
-    if (!el) return
-
-    if (!document.fullscreenElement) {
-      try {
-        await el.requestFullscreen()
-        if (screen.orientation?.lock) {
-          try { await screen.orientation.lock('landscape') } catch { }
-        }
-      } catch (err) {
-        console.error('Não foi possível entrar em tela cheia:', err)
-      }
-    } else {
-      if (screen.orientation?.unlock) {
-        try { screen.orientation.unlock() } catch { }
-      }
-      await document.exitFullscreen()
-    }
   }, [])
 
   const destinoEhValido = useCallback((destKey) => {
@@ -584,9 +624,8 @@ export default function Central() {
       return
     }
     if (posicoes[key]) {
-      // sincroniza a aba com o prédio clicado no mapa
       const ed = edificioPorId.get(posicoes[key])
-      const predio = predios.find(p => p.nome === ed?.nome)
+      const predio = predios.find(p => p.id === ed?.id)
       if (predio) {
         setPredioSelecionadoId(predio.id)
         setAndarAbertoId(null)
@@ -641,18 +680,21 @@ export default function Central() {
   return (
     <div className="h-screen w-full flex overflow-hidden bg-neutral-950">
 
-<button
-  className="fixed top-0 left-0 z-50 h-[100px] w-[100px] text-white"
-  onClick={() => setModalDiretory(true)}
->
-  ativar diretorio
-</button>
+      <button
+        className="fixed top-3 left-3 z-50 h-[80px] w-[80px] flex items-center justify-center rounded-xl bg-black text-white hover:scale-[1.02] cursor-pointer border border-white/20"
+        onClick={() => setModalDiretory(true)}
+        title="Selecionar diretório"
+      >
+        <LucideFolderCog size={30} />
+      </button>
 
-{modalDiretory && (
-  <ModalDiretory onClose={() => setModalDiretory(false)} />
-)}
+      {modalDiretory && (
+        <ModalDirectory
+          onClose={() => setModalDiretory(false)}
+          onSelect={handleDiretorioSelecionado}
+        />
+      )}
 
-      {/* `layout` removido: combinado com animação de width, ele escalava o canvas e distorcia o mapa */}
       <motion.div
         animate={{ width: larguraMapa }}
         initial={false}
@@ -678,7 +720,6 @@ export default function Central() {
           onCancelarMove={cancelarMoveMode}
           onFecharPainel={fecharPainel}
           onMapReady={handleMapReady}
-
           cameraPosition={[-3.5, -5, -3.5]}
           cameraFov={35}
           cameraTarget={[0, 0, 0]}
@@ -698,10 +739,7 @@ export default function Central() {
         }}
         className="h-full shrink-0 overflow-hidden border-l border-[#6411D9]/30 bg-[#1a0640]/95 backdrop-blur-md"
       >
-        {/* largura fixa: evita o conteúdo reflowar durante a animação */}
         <div className="flex h-full" style={{ width: SIDEBAR_W }}>
-
-          {/* ESQUERDA: analítico */}
           <PainelAnalitico
             predios={predios}
             predioAtivo={predioAtivo}
@@ -710,10 +748,11 @@ export default function Central() {
             apartamentoSelecionado={apartamentoSelecionado}
           />
 
-          {/* DIREITA: visual */}
           <div className="flex h-full min-w-0 flex-1 flex-col">
             <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[#6411D9]/25 px-4 py-3">
-              <div className="text-[10px] uppercase tracking-widest text-white/35">Fachada · {predioAtivo.nome}</div>
+              <div className="text-[10px] uppercase tracking-widest text-white/35">
+                Fachada · {predioAtivo?.nome ?? '—'}
+              </div>
               <div className="flex flex-wrap justify-end gap-x-3 gap-y-1">
                 {ORDEM_STATUS.map(k => (
                   <span key={k} className="flex items-center gap-1 text-[10px] text-white/50">
@@ -725,19 +764,20 @@ export default function Central() {
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto p-4">
-              <FachadaPredio
-                predio={predioAtivo}
-                andarAbertoId={andarAbertoId}
-                aptSelId={apartamentoSelecionadoId}
-                onAndar={handleToggleAndar}
-                onApt={handleSelecionarApartamento}
-              />
+              {predioAtivo && (
+                <FachadaPredio
+                  predio={predioAtivo}
+                  andarAbertoId={andarAbertoId}
+                  aptSelId={apartamentoSelecionadoId}
+                  onAndar={handleToggleAndar}
+                  onApt={handleSelecionarApartamento}
+                />
+              )}
             </div>
           </div>
-
         </div>
       </motion.aside>
 
-    </div >
+    </div>
   )
 }

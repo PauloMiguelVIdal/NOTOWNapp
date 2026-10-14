@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useEffect, Component } from 'react'
 import { useGLTF, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
-import { resolverModelo } from './BuildingModels'
-import { Const } from 'three/tsl'
+import { resolverModelo, resolverModeloModular } from './BuildingModels'
 
 // ─────────────────────────────────────────────────────────────
 //  Cache de disponibilidade
@@ -30,7 +29,7 @@ function useResolverCaminho(arquivoBase) {
   const [resultado, setResultado] = useState(() => {
     if (!arquivoBase || caminhos.length === 0) return { path: null, status: 'missing' }
     for (const p of caminhos) {
-      if (glbCache[p] === 'ok')      return { path: p,    status: 'ready'   }
+      if (glbCache[p] === 'ok') return { path: p, status: 'ready' }
       if (glbCache[p] === 'missing') continue
     }
     if (caminhos.every(p => glbCache[p] === 'missing')) {
@@ -59,8 +58,8 @@ function useResolverCaminho(arquivoBase) {
       if (!cancelled) setResultado({ path: null, status: 'missing' })
     }
 
-    if (resultado.status === 'loading') resolver()
-    
+    resolver()
+
     return () => { cancelled = true }
   }, [caminhos, arquivoBase])
 
@@ -92,14 +91,14 @@ class ModelErrorBoundary extends Component {
 }
 
 // ─────────────────────────────────────────────────────────────
-//  Fallback visual (COM GEOMETRIAS MEMOIZADAS)
+//  Fallback visual
 // ─────────────────────────────────────────────────────────────
 export function ModeloFallback({ cor = '#888888', config = {} }) {
   const hasShadows = config?.buildingShadows ?? true
-  
+
   const geometryBox = useMemo(() => new THREE.BoxGeometry(0.28, 0.18, 0.28), [])
   const geometryCone = useMemo(() => new THREE.ConeGeometry(0.22, 0.16, 4), [])
-  
+
   return (
     <group>
       <mesh position={[0, 0.09, 0]} castShadow={hasShadows}>
@@ -117,15 +116,8 @@ export function ModeloFallback({ cor = '#888888', config = {} }) {
 // ─────────────────────────────────────────────────────────────
 //  Loader COM colormap
 // ─────────────────────────────────────────────────────────────
-function ModeloComColormap({ 
-  glbPath, 
-  colormap, 
-  escalaVec, 
-  posY, 
-  rotacao, 
-  rotacaoCorrecao, 
-  corTint,
-  config = {} 
+function ModeloComColormap({
+  glbPath, colormap, escalaVec, posY, rotacao, rotacaoCorrecao, corTint, config = {}
 }) {
   const { scene } = useGLTF(glbPath)
   const textura = useTexture(colormap)
@@ -171,14 +163,8 @@ function ModeloComColormap({
 // ─────────────────────────────────────────────────────────────
 //  Loader SEM colormap
 // ─────────────────────────────────────────────────────────────
-function ModeloSemColormap({ 
-  glbPath, 
-  escalaVec, 
-  posY, 
-  rotacao, 
-  rotacaoCorrecao, 
-  corTint,
-  config = {} 
+function ModeloSemColormap({
+  glbPath, escalaVec, posY, rotacao, rotacaoCorrecao, corTint, config = {}
 }) {
   const { scene } = useGLTF(glbPath)
   const hasShadows = config?.buildingShadows ?? true
@@ -259,21 +245,23 @@ function ModeloLoader({ config, corFallback, graphicsConfig = {} }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-//  COMPONENTE PÚBLICO - COM SUPORTE A CONFIGURAÇÃO GRÁFICA
+//  COMPONENTE PÚBLICO
 // ─────────────────────────────────────────────────────────────
-export function BuildingModel({ 
-  nomeEdificio, 
-  corFallback = '#888888', 
-  posicaoBase = [0, 0, 0], 
-  _overrideConfig = null, 
+export function BuildingModel({
+  nomeEdificio,
+  corFallback = '#888888',
+  posicaoBase = [0, 0, 0],
+  _overrideConfig = null,
   _overrideModeloId = null,
+  quantidadeArquivos = null,
   graphicsConfig = {}
 }) {
   const config = useMemo(() => {
-    return _overrideConfig
-      ?? (_overrideModeloId != null ? resolverModelo(null, _overrideModeloId) : null)
-      ?? resolverModelo(nomeEdificio)
-  }, [_overrideConfig, _overrideModeloId, nomeEdificio])
+    if (_overrideConfig) return _overrideConfig
+    if (_overrideModeloId != null) return resolverModelo(null, _overrideModeloId)
+    if (quantidadeArquivos != null) return resolverModeloModular(quantidadeArquivos)
+    return resolverModelo(nomeEdificio)
+  }, [_overrideConfig, _overrideModeloId, nomeEdificio, quantidadeArquivos])
 
   // 🔹 SIMPLES
   if (config?.tipo === 'simples') {
@@ -305,13 +293,12 @@ export function BuildingModel({
   // 🚀 COMPOSTO ESCALÁVEL
   if (config?.tipo === 'compostoEscalavel') {
     const altura = config.alturaAndar ?? 0.31
-  const baseY = config.partes[0]?.posY ?? 0   
 
     return (
       <group position={posicaoBase}>
         {config.partes.map((parte, i) => {
           const off = parte.offset ?? [0, 0, 0]
-          const pos = [off[0], off[1] + altura * i , off[2]]
+          const pos = [off[0], off[1] + altura * i, off[2]]
 
           const scale = parte.escalaVec
             ? parte.escalaVec.map(v => v * (parte.escalaExtra ?? 1))
@@ -339,5 +326,3 @@ export function BuildingModel({
     </group>
   )
 }
-
-
