@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@font-face {
+    font-family: 'Inter';
+    font-weight: 700;
+    font-style: bold;
+    font-display: swap;
+    src: url('../public/font/Inter-Bold.woff2') format('woff2');
+}
