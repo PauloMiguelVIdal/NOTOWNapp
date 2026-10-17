@@ -383,6 +383,8 @@ export default function Central() {
   const [moveMode, setMoveMode] = useState(false)
   const [hoveredKey, setHoveredKey] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+    const diretorio = useNotownStore((s) => s.diretorio)
+  const diretorioSelecionado = diretorio.diretorioSelecionado
   const [modalDiretory, setModalDiretory] = useState(false)
   const [arquivosMap, setArquivosMap] = useState(null)
 
@@ -401,9 +403,20 @@ export default function Central() {
   const predios = useMemo(() => {
     if (!arquivosMap || arquivosMap.size === 0) {
       return [
-        gerarPredioFake({ nome: 'Node', andares: 25 }),
-        gerarPredioFake({ nome: 'React', andares: 25 }),
-        gerarPredioFake({ nome: 'PredioCompleto', andares: 25 }),
+        gerarPredioFake({ nome: 'Node', andares: 17 }),
+        gerarPredioFake({ nome: 'Javascript', andares: 14 }),
+        gerarPredioFake({ nome: 'Tailwind', andares: 12 }),
+        gerarPredioFake({ nome: 'Java', andares: 15 }),
+        gerarPredioFake({ nome: 'NextJs', andares: 11 }),
+        gerarPredioFake({ nome: 'NestJs', andares: 12 }),
+        gerarPredioFake({ nome: 'Typescript', andares: 5 }),
+        gerarPredioFake({ nome: 'TreeJs', andares: 7 }),
+        gerarPredioFake({ nome: 'Zuntand', andares: 12 }),
+        gerarPredioFake({ nome: 'MongoDb', andares: 4 }),
+        gerarPredioFake({ nome: 'MySql', andares: 1 }),
+        gerarPredioFake({ nome: 'Postgress', andares: 2 }),
+        gerarPredioFake({ nome: 'Github', andares: 5 }),
+        gerarPredioFake({ nome: 'RAG  ', andares: 13 }),
       ]
     }
 

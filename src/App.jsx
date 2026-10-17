@@ -13,8 +13,8 @@ function App() {
         <GraphicsConfigProvider>
           {/* <Central>
           </Central> */}
-          <HomeSreen/>
-          {/* <LandingPage/> */}
+          {/* <HomeSreen/> */}
+          <LandingPage/>
         </GraphicsConfigProvider>
 
       </section>

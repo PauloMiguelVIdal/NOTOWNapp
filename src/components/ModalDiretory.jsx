@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react"
-
+import { useNotownStore } from "../store/notownStore"
 const EXT_PREVIEW = new Set(['.js', '.jsx', '.ts', '.tsx', '.json', '.md', '.css', '.html'])
 
 async function lerDiretorioRecursivo(dirHandle, basePath = "") {
@@ -37,6 +37,12 @@ export default function ModalDirectory({ onClose, onSelect }) {
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState(null)
 
+    const diretorio = useNotownStore((s) => s.diretorio)
+  const diretorioSelecionado = diretorio.diretorioSelecionado == true?alert('opaaa'): alert('teste')   
+useEffect(()=>{
+   diretorio() 
+},[diretorioSelecionado])
+
   const abrirDiretorio = useCallback(async () => {
     if (!window.showDirectoryPicker) {
       setErro("Navegador não suporta. Use Chrome/Edge em HTTPS ou localhost.")
@@ -62,6 +68,7 @@ export default function ModalDirectory({ onClose, onSelect }) {
 
   const confirmar = useCallback(() => {
     if (arquivos && onSelect) onSelect(arquivos, dirHandle)
+    diretorio()
     onClose?.()
   }, [arquivos, dirHandle, onSelect, onClose])
 

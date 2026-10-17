@@ -73,6 +73,9 @@ const initialState = {
     loading: false,
     erro: null,
   },
+  diretorio: {
+    diretorioSelecionado: false,
+  },
 
   catalogo: {
     cartas: CARTAS_CATALOGO,
@@ -229,6 +232,7 @@ export const useNotownStore = create(
       // 9. UI
       // ═══════════════════════════════════════════════════════
 
+      selecionarDiretorio: () => set((s) => ({ diretorio: { ...s.diretorio, diretorioSelecionado: true } })),
       abrirModalAtividade: () => set((s) => ({ ui: { ...s.ui, modalAtividadeAberto: true } })),
       fecharModalAtividade: () => set((s) => ({ ui: { ...s.ui, modalAtividadeAberto: false } })),
 
