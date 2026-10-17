@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback, useMemo,useEffect } from "react"
 import { useNotownStore } from "../store/notownStore"
 const EXT_PREVIEW = new Set(['.js', '.jsx', '.ts', '.tsx', '.json', '.md', '.css', '.html'])
 
@@ -37,12 +37,9 @@ export default function ModalDirectory({ onClose, onSelect }) {
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState(null)
 
-    const diretorio = useNotownStore((s) => s.diretorio)
-  const diretorioSelecionado = diretorio.diretorioSelecionado == true?alert('opaaa'): alert('teste')   
-useEffect(()=>{
-   diretorio() 
-},[diretorioSelecionado])
-
+    const selecionarDiretorio = useNotownStore((s) => s.selecionarDiretorio)
+    const endereçoDiretorio = useNotownStore((s) => s.selecionarEndereçoDiretorio)
+console.log(dirHandle)
   const abrirDiretorio = useCallback(async () => {
     if (!window.showDirectoryPicker) {
       setErro("Navegador não suporta. Use Chrome/Edge em HTTPS ou localhost.")
@@ -52,6 +49,7 @@ useEffect(()=>{
     try {
       const handle = await window.showDirectoryPicker({ mode: "read" })
       setDirHandle(handle)
+      endereçoDiretorio(handle.kind)
       setErro(null)
       setLoading(true)
 
@@ -68,7 +66,7 @@ useEffect(()=>{
 
   const confirmar = useCallback(() => {
     if (arquivos && onSelect) onSelect(arquivos, dirHandle)
-    diretorio()
+    selecionarDiretorio()
     onClose?.()
   }, [arquivos, dirHandle, onSelect, onClose])
 

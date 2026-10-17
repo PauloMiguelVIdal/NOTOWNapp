@@ -385,7 +385,7 @@ export default function Central() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
     const diretorio = useNotownStore((s) => s.diretorio)
   const diretorioSelecionado = diretorio.diretorioSelecionado
-  const [modalDiretory, setModalDiretory] = useState(false)
+
   const [arquivosMap, setArquivosMap] = useState(null)
 
   const SIDEBAR_W = useSidebarWidth()
@@ -693,20 +693,9 @@ export default function Central() {
   return (
     <div className="h-full w-full rounded-2xl flex overflow-hidden bg-neutral-950">
 
-      <button
-        className="fixed top-3 left-3 z-50 h-[80px] w-[80px] flex items-center justify-center rounded-xl bg-black text-white hover:scale-[1.02] cursor-pointer border border-white/20"
-        onClick={() => setModalDiretory(true)}
-        title="Selecionar diretório"
-      >
-        <LucideFolderCog size={30} />
-      </button>
 
-      {modalDiretory && (
-        <ModalDirectory
-          onClose={() => setModalDiretory(false)}
-          onSelect={handleDiretorioSelecionado}
-        />
-      )}
+
+
 
       <motion.div
         animate={{ width: larguraMapa }}

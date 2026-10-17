@@ -233,6 +233,7 @@ export const useNotownStore = create(
       // ═══════════════════════════════════════════════════════
 
       selecionarDiretorio: () => set((s) => ({ diretorio: { ...s.diretorio, diretorioSelecionado: true } })),
+      selecionarEndereçoDiretorio: () => set((s) => ({ diretorio: { ...s.diretorio, endereçoDiretorio: null } })),
       abrirModalAtividade: () => set((s) => ({ ui: { ...s.ui, modalAtividadeAberto: true } })),
       fecharModalAtividade: () => set((s) => ({ ui: { ...s.ui, modalAtividadeAberto: false } })),
 
