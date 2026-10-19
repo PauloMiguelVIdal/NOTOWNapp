@@ -8,16 +8,32 @@ import linkedin from '../../public/img/icon/linkedin.png'
 import github from '../../public/img/icon/github.png'
 import { useNotownStore } from "../store/notownStore";
 import { h1 } from "motion/react-client";
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 import ModalDirectory from "../components/modalDiretory";
+import { a } from "motion/react-m";
 
 export default function LandingPage() {
 
+
     const diretorio = useNotownStore((s) => s.diretorio)
-    const [modalDiretory, setModalDiretory] = useState(false)
+    const setArquivosMap = useNotownStore((s) => s.setArquivosMap)
+    const setModalDiretory = useNotownStore((s) => s.setModalDiretory)
+    
+    
+    
+    const modalDiretory =  useNotownStore((s) => s.modalDiretory)
     const diretórioSelecionado = diretorio.diretorioSelecionado
-    // console.log(diretorio.EndereçoDiretorio)
+    console.log(diretorio.EnderecoDiretorio)
+    console.log(diretorio)
+
+
     const dimensionMap = diretórioSelecionado === true ? `w-[98vw] h-[94vh]` : `w-[40vw] h-[40vh]`
+
+  const handleDiretorioSelecionado = useCallback((map) => {
+    setArquivosMap(map)
+    console.log("Arquivos carregados:", map.size)
+  }, [])
+
 
     return (
         <div className="h-screen w-full flex justify-center items-center bg-gradient-to-br from-white to-[#8F5ADA] flex-col ">
@@ -25,11 +41,11 @@ export default function LandingPage() {
             {modalDiretory && (
                 <ModalDirectory
                     onClose={() => setModalDiretory(false)}
-                // onSelect={handleDiretorioSelecionado}
+                     onSelect={handleDiretorioSelecionado}
                 />
             )}
             {!diretórioSelecionado && (
-                <div>
+                <div className="w-full flex justify-center items-center flex-col ">
 
 
                     <img className="w-[1000px] relative right-[40px]" src={logoExtendida} alt="" />
@@ -71,7 +87,7 @@ export default function LandingPage() {
                         {/* <LucideStar className="relative top-10 left-0" size={30} color="white"/> */}
                     </button>
 
-                    <button className="flex justify-between items-center w-[30%] h-full bg-gradient-to-r from-[#8F5ADA] from-5% via-[#6411D9] via-18% to-[#350973] to-70% hover:bg-gradient-to-r hover:from-[#350973] hover:to-black rounded-xl cursor-pointer ">
+                    <button  className="flex justify-between items-center w-[30%] h-full bg-gradient-to-r from-[#8F5ADA] from-5% via-[#6411D9] via-18% to-[#350973] to-70% hover:bg-gradient-to-r hover:from-[#350973] hover:to-black rounded-xl cursor-pointer ">
                         <div className="cursor-pointer aspect-square h-[100%]  rounded-xl flex items-center justify-center  ">
                             <LucideMonitor color="white" className="h-[80%] aspect-square ml-1" alt="" />
                         </div>

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo,useEffect } from "react"
+import { useState, useCallback, useMemo, useEffect } from "react"
 import { useNotownStore } from "../store/notownStore"
 const EXT_PREVIEW = new Set(['.js', '.jsx', '.ts', '.tsx', '.json', '.md', '.css', '.html'])
 
@@ -37,9 +37,9 @@ export default function ModalDirectory({ onClose, onSelect }) {
   const [loading, setLoading] = useState(false)
   const [erro, setErro] = useState(null)
 
-    const selecionarDiretorio = useNotownStore((s) => s.selecionarDiretorio)
-    const endereçoDiretorio = useNotownStore((s) => s.selecionarEndereçoDiretorio)
-console.log(dirHandle)
+  const selecionarDiretorio = useNotownStore((s) => s.selecionarDiretorio)
+  const enderecoDiretorio = useNotownStore((s) => s.selecionarEnderecoDiretorio)
+  console.log(dirHandle)
   const abrirDiretorio = useCallback(async () => {
     if (!window.showDirectoryPicker) {
       setErro("Navegador não suporta. Use Chrome/Edge em HTTPS ou localhost.")
@@ -49,7 +49,7 @@ console.log(dirHandle)
     try {
       const handle = await window.showDirectoryPicker({ mode: "read" })
       setDirHandle(handle)
-      endereçoDiretorio(handle.kind)
+      enderecoDiretorio(handle.name)
       setErro(null)
       setLoading(true)
 
@@ -62,13 +62,15 @@ console.log(dirHandle)
       console.error(err)
       setErro(err.message || "Erro ao ler diretório")
     }
-  }, [])
+  }, [selecionarDiretorio])
 
   const confirmar = useCallback(() => {
     if (arquivos && onSelect) onSelect(arquivos, dirHandle)
     selecionarDiretorio()
+    onSelect?.(arquivos, dirHandle)
     onClose?.()
-  }, [arquivos, dirHandle, onSelect, onClose])
+
+  }, [arquivos, dirHandle, onSelect, onClose,setArquivos,selecionarDiretorio])
 
   // Agrupa por pasta pai, filtrando por extensões relevantes
   const pastas = useMemo(() => {
@@ -93,7 +95,7 @@ console.log(dirHandle)
       onClick={onClose}
     >
       <div
-        className="flex h-[70vh] w-[70vw] max-w-[900px] flex-col gap-4 overflow-hidden rounded-lg bg-neutral-900 p-6 text-white"
+        className="flex justify-between h-[70vh] w-[70vw] max-w-[900px] flex-col gap-4 overflow-hidden rounded-lg bg-[#350973] p-6 text-white"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
@@ -106,7 +108,7 @@ console.log(dirHandle)
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-center gap-3">
           <button
             onClick={abrirDiretorio}
             className="rounded-md bg-[#6411D9] px-4 py-2 hover:bg-[#7a2ae8]"

@@ -18,6 +18,18 @@ const STATUS = {
   revisar: { label: 'Revisar', cor: '#F27405' },
 }
 const ORDEM_STATUS = ['dominado', 'aprendendo', 'novo', 'revisar']
+const ALTUAR_MAX_PREDIO = 15
+
+
+
+
+
+
+
+
+
+
+
 const COLS = 5
 
 // Extensões que viram "andares"
@@ -33,7 +45,7 @@ const vizinhosDeHex = (q, r) => HEX_DIRECTIONS.map(([dq, dr]) => `${q + dq},${r 
 const calcSidebarW = () =>
   typeof window === 'undefined'
     ? 820
-    : Math.max(640, Math.min(Math.round(window.innerWidth * 0.55), 920))
+    : Math.max(630, Math.min(Math.round(window.innerWidth * 0.25), 920))
 
 function useSidebarWidth() {
   const [w, setW] = useState(calcSidebarW)
@@ -70,7 +82,22 @@ function hashStr(str) {
 function gerarPredioDeArquivos({ nome, arquivos }) {
   const id = `predio-${nome}`
 
-  const listaAndares = arquivos.map((fileInfo, i) => {
+
+
+  const arquivosLimitados = arquivos.slice(0,ALTUAR_MAX_PREDIO)
+
+
+  const diferencaAndares = Math.max(arquivos.length - ALTUAR_MAX_PREDIO)
+
+
+
+//andares renderizados no mapa => depende do limitador
+
+//andares da lista deve conter todos os arquivos
+
+
+
+  const listaAndares = arquivosLimitados.map((fileInfo, i) => {
     const numero = i + 1
     const seed = hashStr(fileInfo.path)
     const qtd = 2 + (seed % 4)
@@ -90,6 +117,7 @@ function gerarPredioDeArquivos({ nome, arquivos }) {
       numero,
       arquivo: fileInfo.name,
       caminho: fileInfo.path,
+      excedentes: diferencaAndares,
       apartamentos: cards,
       stats: calcStats(cards),
     }
@@ -98,7 +126,8 @@ function gerarPredioDeArquivos({ nome, arquivos }) {
   return {
     id,
     nome,
-    andares: listaAndares,
+    andares: listaAndares,    
+    excedentes: diferencaAndares,
     stats: calcStats(listaAndares.flatMap(a => a.apartamentos)),
   }
 }
@@ -324,7 +353,7 @@ function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAnda
           ))}
         </div>
 
-        <div className="flex items-end justify-between">
+        {/* <div className="flex items-end justify-between">
           <div className="min-w-0">
             <div className="text-[10px] uppercase tracking-widest text-white/35">Pasta · análise</div>
             <h2 className="truncate text-lg font-semibold leading-tight text-white">{predioAtivo.nome}</h2>
@@ -347,14 +376,14 @@ function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAnda
               <div className="text-sm font-semibold tabular-nums text-white">{s[k]}</div>
             </div>
           ))}
-        </div>
+        </div> */}
       </div>
 
-      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
+      {/* <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
         <RankList titulo="Prioridade de revisão" cor="#F27405" itens={prioridade} onAbrir={onAbrirAndar} />
         <RankList titulo="Ainda não iniciados" cor="#A67BF5" itens={comecar} onAbrir={onAbrirAndar} />
         <RankList titulo="Mais fortes" cor="#6411D9" itens={fortes} onAbrir={onAbrirAndar} />
-      </div>
+      </div> */}
 
       <div className="shrink-0 border-t border-[#6411D9]/25 p-4">
         {apartamentoSelecionado ? (
@@ -383,10 +412,11 @@ export default function Central() {
   const [moveMode, setMoveMode] = useState(false)
   const [hoveredKey, setHoveredKey] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const arquivosMap = useNotownStore((s) => s.arquivosMap)
     const diretorio = useNotownStore((s) => s.diretorio)
+    const setArquivosMap = useNotownStore((s) => s.setArquivosMap)
   const diretorioSelecionado = diretorio.diretorioSelecionado
 
-  const [arquivosMap, setArquivosMap] = useState(null)
 
   const SIDEBAR_W = useSidebarWidth()
   const larguraMapa = isSidebarOpen ? `calc(100% - ${SIDEBAR_W}px)` : '100%'
@@ -722,7 +752,7 @@ export default function Central() {
           onCancelarMove={cancelarMoveMode}
           onFecharPainel={fecharPainel}
           onMapReady={handleMapReady}
-          cameraPosition={[-3.5, -5, -3.5]}
+          cameraPosition={[15, 15, 15]}
           cameraFov={35}
           cameraTarget={[0, 0, 0]}
           minDistance={3}
@@ -781,5 +811,6 @@ export default function Central() {
       </motion.aside>
 
     </div>
+    
   )
 }

@@ -75,6 +75,7 @@ const initialState = {
   },
   diretorio: {
     diretorioSelecionado: false,
+    enderecoDiretorio:null
   },
 
   catalogo: {
@@ -121,6 +122,8 @@ export const useNotownStore = create(
         cartasNovas: {},
       })),
 
+       arquivosMap:null,
+       modalDiretory:false,
       
 
       // ═══════════════════════════════════════════════════════
@@ -233,7 +236,9 @@ export const useNotownStore = create(
       // ═══════════════════════════════════════════════════════
 
       selecionarDiretorio: () => set((s) => ({ diretorio: { ...s.diretorio, diretorioSelecionado: true } })),
-      selecionarEndereçoDiretorio: () => set((s) => ({ diretorio: { ...s.diretorio, endereçoDiretorio: null } })),
+      setArquivosMap: (map) => set( {arquivosMap:map}),
+      setModalDiretory: (valor) => set({modalDiretory:valor}),
+      selecionarEnderecoDiretorio: (valor) => set((s) => ({ diretorio: { ...s.diretorio, enderecoDiretorio:valor  } })),
       abrirModalAtividade: () => set((s) => ({ ui: { ...s.ui, modalAtividadeAberto: true } })),
       fecharModalAtividade: () => set((s) => ({ ui: { ...s.ui, modalAtividadeAberto: false } })),
 
@@ -253,7 +258,7 @@ export const useNotownStore = create(
 
     }),
     {
-      name: 'fitcity-storage',
+      name: 'notown-storage',
       version: 4, // ⬅️ bump para forçar migrate
       storage: createJSONStorage(() => localStorage),
 
