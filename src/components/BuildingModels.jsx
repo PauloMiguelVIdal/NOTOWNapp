@@ -2433,7 +2433,7 @@ export function resolverModeloSede(classificacaoPorte) {
   const base = MODELOS[95]
   const pacoteBase = PACOTES[base.pacote]
   const sBase = base.escala ?? 1
-  const sEdificio = edificio.escala ?? 0.4
+  const sEdificio = 0.8
 
   return {
     tipo: 'composto',
