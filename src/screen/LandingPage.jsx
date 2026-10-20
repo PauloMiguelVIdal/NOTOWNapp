@@ -8,7 +8,7 @@ import linkedin from '../../public/img/icon/linkedin.png'
 import github from '../../public/img/icon/github.png'
 import { useNotownStore } from "../store/notownStore";
 import { h1 } from "motion/react-client";
-import { useEffect, useState,useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import ModalDirectory from "../components/modalDiretory";
 import { a } from "motion/react-m";
 
@@ -18,10 +18,10 @@ export default function LandingPage() {
     const diretorio = useNotownStore((s) => s.diretorio)
     const setArquivosMap = useNotownStore((s) => s.setArquivosMap)
     const setModalDiretory = useNotownStore((s) => s.setModalDiretory)
-    
-    
-    
-    const modalDiretory =  useNotownStore((s) => s.modalDiretory)
+
+
+
+    const modalDiretory = useNotownStore((s) => s.modalDiretory)
     const diretórioSelecionado = diretorio.diretorioSelecionado
     console.log(diretorio.EnderecoDiretorio)
     console.log(diretorio)
@@ -29,10 +29,10 @@ export default function LandingPage() {
 
     const dimensionMap = diretórioSelecionado === true ? `w-[98vw] h-[94vh]` : `w-[40vw] h-[40vh]`
 
-  const handleDiretorioSelecionado = useCallback((map) => {
-    setArquivosMap(map)
-    console.log("Arquivos carregados:", map.size)
-  }, [])
+    const handleDiretorioSelecionado = useCallback((map) => {
+        setArquivosMap(map)
+        console.log("Arquivos carregados:", map.size)
+    }, [])
 
 
     return (
@@ -41,7 +41,7 @@ export default function LandingPage() {
             {modalDiretory && (
                 <ModalDirectory
                     onClose={() => setModalDiretory(false)}
-                     onSelect={handleDiretorioSelecionado}
+                    onSelect={handleDiretorioSelecionado}
                 />
             )}
             {!diretórioSelecionado && (
@@ -86,20 +86,21 @@ export default function LandingPage() {
                         {/* <MousePointerClick className="relative top-10 left-0" size={40} color="white" /> */}
                         {/* <LucideStar className="relative top-10 left-0" size={30} color="white"/> */}
                     </button>
+                    <a  href="https://postif-lio.vercel.app/" target="_blank" className="flex justify-between items-center w-[30%] h-full bg-gradient-to-r from-[#8F5ADA] from-5% via-[#6411D9] via-18% to-[#350973] to-70% hover:bg-gradient-to-r hover:from-[#350973] hover:to-black rounded-xl cursor-pointer ">
 
-                    <button  className="flex justify-between items-center w-[30%] h-full bg-gradient-to-r from-[#8F5ADA] from-5% via-[#6411D9] via-18% to-[#350973] to-70% hover:bg-gradient-to-r hover:from-[#350973] hover:to-black rounded-xl cursor-pointer ">
-                        <div className="cursor-pointer aspect-square h-[100%]  rounded-xl flex items-center justify-center  ">
-                            <LucideMonitor color="white" className="h-[80%] aspect-square ml-1" alt="" />
-                        </div>
-                        <h2 style={{ fontFamily: "Inter, sans-serif" }} className="Inter font-bold text-[15px] text-center w-full text-white">Meu Portifólio</h2>
-                    </button>
-                    <button className="flex justify-between items-center h-full p-2 bg-gradient-to-br from-[#6411D9] to-[#350973] hover:bg-gradient-to-l hover:from-[#8F5ADA] hover:to-[#6411D9]  rounded-xl hover:scale-[1.01] cursor-pointer">
+                            <div className="cursor-pointer aspect-square h-[100%]  rounded-xl flex items-center justify-center  ">
+                                <LucideMonitor color="white" className="h-[80%] aspect-square ml-1" alt="" />
+                            </div>
+                            <h2 style={{ fontFamily: "Inter, sans-serif" }} className="Inter font-bold text-[15px] text-center w-full text-white">Meu Portifólio</h2>
+               
+                    </a>
+                    <a href="https://www.linkedin.com/in/paulo-miguel-vidal-da-silva/" target="_blank" className="flex justify-between items-center h-full p-2 bg-gradient-to-br from-[#6411D9] to-[#350973] hover:bg-gradient-to-l hover:from-[#8F5ADA] hover:to-[#6411D9]  rounded-xl hover:scale-[1.01] cursor-pointer">
 
                         {/* <div className=" aspect-square flex h-full bg-gradient-to-br from-[#6411D9] cursor-pointer to-[#8F5ADA] rounded-xl flex items-center justify-center transition-300 "> */}
                         <img className="h-[100%] aspect-square" src={linkedin} alt="" />
                         {/* </div> */}
                         {/* <h2 style={{ fontFamily: "Inter, sans-serif" }} className="Inter font-bold text-[15px] text-center w-full text-white">PAULO MIGUEL</h2> */}
-                    </button>
+                    </a>
                     {/* <div className="flex flex-col justify-around rounded-xl h-[59%] w-full gap-2 ">
 
                     <div className="w-full h-full flex gap-2 flex-col items-center p-2 ">
