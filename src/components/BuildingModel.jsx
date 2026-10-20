@@ -290,35 +290,40 @@ export function BuildingModel({
     )
   }
 
-  // 🚀 COMPOSTO ESCALÁVEL
-  if (config?.tipo === 'compostoEscalavel') {
-    const altura = config.alturaAndar ?? 0.31
+// 🚀 COMPOSTO ESCALÁVEL
+if (config?.tipo === 'compostoEscalavel') {
+  const altura = config.alturaAndar ?? 0.31
 
-    return (
-      <group position={posicaoBase}>
-        {config.partes.map((parte, i) => {
-          const off = parte.offset ?? [0, 0, 0]
-          const pos = [off[0], off[1], off[2]]
+  return (
+    <group position={posicaoBase}>
+      {config.partes.map((parte, i) => {
+        const off = parte.offset ?? [0, 0, 0]
+        const pos = [off[0], off[1], off[2]]
 
-          const scale = parte.escalaVec
-            ? parte.escalaVec.map(v => v * (parte.escalaExtra ?? 1))
-            : (parte.escala ?? 1) * (parte.escalaExtra ?? 1)
+  
+        let baseScale = parte.escala ?? 1
+        if (typeof baseScale === 'number') {
+          baseScale = [1, baseScale, 1] 
+        }
 
-          return (
-            <group
-              key={i}
-              position={pos}
-              rotation={[0, parte.rotacaoExtra ?? 0, 0]}
-              scale={scale}
-            >
-              <ModeloLoader config={parte} corFallback={corFallback} graphicsConfig={graphicsConfig} />
-            </group>
-          )
-        })}
-      </group>
-    )
-  }
 
+        const extra = parte.escalaExtra ?? 1
+        const scale = baseScale.map(v => v * extra)
+
+        return (
+          <group
+            key={i}
+            position={pos}
+            rotation={[0, parte.rotacaoExtra ?? 0, 0]}
+            scale={scale}
+          >
+            <ModeloLoader config={parte} corFallback={corFallback} graphicsConfig={graphicsConfig} />
+          </group>
+        )
+      })}
+    </group>
+  )
+}
   // fallback
   return (
     <group position={posicaoBase}>
