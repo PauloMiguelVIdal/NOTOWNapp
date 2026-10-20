@@ -259,20 +259,19 @@ const HexTile = React.memo(({
   onHover,
   isHovered,
   isBlocked,
-            edificiosAtivos,arquivos
 
 }) => {
 
+ const ALTURA_POR_ANDAR = 0.3
+const BASE_HEX = 0.22 
+const MARGEM = 0.3
+const andares = building?.quantidade ?? 0
+const alturaEstimada = andares * ALTURA_POR_ANDAR
+const yPlaca = BASE_HEX + alturaEstimada + MARGEM
 
-  const ALTUAR_MAX_PREDIO = 15
-const quantidadeArquivos = arquivos
 
 
   const excedentes = building?.excedentes ?? 0
-
-// const valorExcedente = quantidadeArquivos - ALTUAR_MAX_PREDIO
-//  const temExcendente = quantidadeArquivos > ALTUAR_MAX_PREDIO ? valorExcedente: 0
-
 
 
   const { x, z } = hexToWorld(hex, HEX_SIZE)
@@ -340,7 +339,8 @@ const quantidadeArquivos = arquivos
             graphicsConfig={config}
 
           />
-          <Html position={[0, 1.8, 0]} center distanceFactor={8}>
+          <Html position={[0, yPlaca, 0]} center distanceFactor={8}>
+
                                     {excedentes > 0 && (
                 <div style={{
                   background: 'linear-gradient(135deg, rgba(242,116,5,0.95), rgba(175,78,0,0.95))',
