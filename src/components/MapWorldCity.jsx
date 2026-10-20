@@ -245,6 +245,7 @@ const HexTileClusterSatelite = React.memo(({ hex, corTopo, modeloId, corFallback
   )
 })
 
+
 // ─────────────────────────────────────────────────────────────
 //  HexTile
 // ─────────────────────────────────────────────────────────────
@@ -258,8 +259,22 @@ const HexTile = React.memo(({
   onHover,
   isHovered,
   isBlocked,
-  quantidade
+            edificiosAtivos,arquivos
+
 }) => {
+
+
+  const ALTUAR_MAX_PREDIO = 15
+const quantidadeArquivos = arquivos
+
+
+  const excedentes = building?.excedentes ?? 0
+
+// const valorExcedente = quantidadeArquivos - ALTUAR_MAX_PREDIO
+//  const temExcendente = quantidadeArquivos > ALTUAR_MAX_PREDIO ? valorExcedente: 0
+
+
+
   const { x, z } = hexToWorld(hex, HEX_SIZE)
   const groupRef = useRef()
   const [targetY, setTargetY] = useState(0)
@@ -317,13 +332,33 @@ const HexTile = React.memo(({
           <BuildingModel
             nomeEdificio={null}
             andares={building.quantidade}
-            quantidadeArquivos={building.quantidade}           
+            quantidadeArquivos={building.quantidade}  
+ 
+
             corFallback={SETOR_CONFIG[building.setor]?.cor4 || '#888888'}
             posicaoBase={[0, 0.22, 0]}
             graphicsConfig={config}
 
           />
           <Html position={[0, 1.8, 0]} center distanceFactor={8}>
+                                    {excedentes > 0 && (
+                <div style={{
+                  background: 'linear-gradient(135deg, rgba(242,116,5,0.95), rgba(175,78,0,0.95))',
+                  border: '1.5px solid #F27405',
+                  borderRadius: 8,
+                  padding: '2px 8px',
+                  fontFamily: "'Rajdhani',sans-serif",
+                  fontWeight: 800,
+                  fontSize: 12,
+                  color: '#fff',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 0 12px rgba(242,116,5,0.6)',
+                }}>
+                  +{excedentes} acima
+                </div>
+              )}
+
             <div style={{
               background: 'linear-gradient(135deg, rgba(76,20,169,0.95), rgba(30,8,80,0.95))',
               border: '1.5px solid rgba(199,159,255,0.6)',
@@ -334,9 +369,11 @@ const HexTile = React.memo(({
               whiteSpace: 'nowrap',
               boxShadow: '0 0 18px rgba(100,17,217,0.55)',
             }}>
-              {building.quantidade} - {building.nome}
+              {building.nome}
+
             </div>
           </Html>
+   
         </>
       )}
 
@@ -578,6 +615,7 @@ export default function MapWorld({
   tilesToRender = [],
   hexMap,
   edificioPorId,
+  arquivos,
 
   // ─── Interação ───
   selectedKey,
@@ -720,8 +758,10 @@ export default function MapWorld({
             const building = edId ? edificioPorId?.get(edId) || null : null
             return (
               <HexTile
+
                 key={key}
                 hex={hex}
+
                 building={building}
                 onClick={onHexClick}
                 selected={key === selectedKey}

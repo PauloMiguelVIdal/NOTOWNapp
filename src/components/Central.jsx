@@ -12,24 +12,13 @@ import { LucideFolderCog } from "lucide-react"
 //  Constantes
 // ─────────────────────────────────────────────────────────────
 const STATUS = {
-  dominado: { label: 'Dominado', cor: '#6411D9' },
+  dominado:   { label: 'Dominado',   cor: '#6411D9' },
   aprendendo: { label: 'Aprendendo', cor: '#A67BF5' },
-  novo: { label: 'Novo', cor: 'rgba(255,255,255,0.22)' },
-  revisar: { label: 'Revisar', cor: '#F27405' },
+  novo:       { label: 'Novo',       cor: 'rgba(255,255,255,0.22)' },
+  revisar:    { label: 'Revisar',    cor: '#F27405' },
 }
 const ORDEM_STATUS = ['dominado', 'aprendendo', 'novo', 'revisar']
 const ALTUAR_MAX_PREDIO = 15
-
-
-
-
-
-
-
-
-
-
-
 const COLS = 5
 
 // Extensões que viram "andares"
@@ -78,26 +67,15 @@ function hashStr(str) {
 // ─────────────────────────────────────────────────────────────
 //  Gera um prédio a partir de uma pasta real de arquivos
 //  1 arquivo = 1 andar
+//  - andares           → TODOS (interface 2D / análise)
+//  - andaresLimitados  → top ALTUAR_MAX_PREDIO (mapa 3D)
+//  - excedentes        → quantos arquivos ficaram de fora do 3D
 // ─────────────────────────────────────────────────────────────
 function gerarPredioDeArquivos({ nome, arquivos }) {
   const id = `predio-${nome}`
 
-
-
-  const arquivosLimitados = arquivos.slice(0,ALTUAR_MAX_PREDIO)
-
-
-  const diferencaAndares = Math.max(arquivos.length - ALTUAR_MAX_PREDIO)
-
-
-
-//andares renderizados no mapa => depende do limitador
-
-//andares da lista deve conter todos os arquivos
-
-
-
-  const listaAndares = arquivosLimitados.map((fileInfo, i) => {
+  // 🔥 gera UMA vez todos os andares
+  const todosAndares = arquivos.map((fileInfo, i) => {
     const numero = i + 1
     const seed = hashStr(fileInfo.path)
     const qtd = 2 + (seed % 4)
@@ -117,24 +95,31 @@ function gerarPredioDeArquivos({ nome, arquivos }) {
       numero,
       arquivo: fileInfo.name,
       caminho: fileInfo.path,
-      excedentes: diferencaAndares,
       apartamentos: cards,
       stats: calcStats(cards),
     }
   })
 
+  const andaresLimitados = todosAndares.slice(0, ALTUAR_MAX_PREDIO)
+  const excedentes = Math.max(0, todosAndares.length - ALTUAR_MAX_PREDIO)
+
   return {
     id,
     nome,
-    andares: listaAndares,    
-    excedentes: diferencaAndares,
-    stats: calcStats(listaAndares.flatMap(a => a.apartamentos)),
+    andares: todosAndares,                 // 2D vê tudo
+    andaresLimitados,                      // 3D vê só o topo
+    excedentes,                            // quantos ficaram de fora do 3D
+    stats: calcStats(todosAndares.flatMap(a => a.apartamentos)),
   }
 }
 
 function gerarPredioFake({ nome, andares }) {
   const id = `fake-${nome}`
-  const listaAndares = Array.from({ length: andares }, (_, i) => {
+  const total = andares
+  const limitados = Math.min(total, ALTUAR_MAX_PREDIO)
+  const excedentes = Math.max(0, total - ALTUAR_MAX_PREDIO)
+
+  const todosAndares = Array.from({ length: total }, (_, i) => {
     const numero = i + 1
     const cards = Array.from({ length: 3 }, (_, j) => ({
       id: `${id}-andar${numero}-card${j + 1}`,
@@ -150,11 +135,14 @@ function gerarPredioFake({ nome, andares }) {
       stats: calcStats(cards),
     }
   })
+
   return {
     id,
     nome,
-    andares: listaAndares,
-    stats: calcStats(listaAndares.flatMap(a => a.apartamentos)),
+    andares: todosAndares,
+    andaresLimitados: todosAndares.slice(0, limitados),
+    excedentes,
+    stats: calcStats(todosAndares.flatMap(a => a.apartamentos)),
   }
 }
 
@@ -199,7 +187,7 @@ function Janela({ apt, selecionado, onClick }) {
 }
 
 // ─────────────────────────────────────────────────────────────
-//  Fachada do prédio
+//  Fachada do prédio — 2D mostra TODOS os andares
 // ─────────────────────────────────────────────────────────────
 function FachadaPredio({ predio, andarAbertoId, aptSelId, onAndar, onApt }) {
   const refs = useRef({})
@@ -214,6 +202,12 @@ function FachadaPredio({ predio, andarAbertoId, aptSelId, onAndar, onApt }) {
 
   return (
     <div className="mx-auto w-full max-w-[460px]">
+      {predio.excedentes > 0 && (
+        <div className="mb-2 flex items-center gap-1.5 rounded bg-[#F27405]/15 px-2 py-1 text-[11px] text-[#F27405]">
+          ⚠ {predio.excedentes} arquivo{predio.excedentes > 1 ? 's' : ''} acima do limite de {ALTUAR_MAX_PREDIO} no mapa 3D
+        </div>
+      )}
+
       <div className="mx-auto h-3 w-[96%] rounded-t-md bg-[#6411D9]" />
 
       <div className="border-x border-[#6411D9]/50 bg-[#1a0640]">
@@ -306,7 +300,7 @@ function RankList({ titulo, cor, itens, onAbrir }) {
 
 function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAndar, apartamentoSelecionado }) {
   const { prioridade, comecar, fortes } = useMemo(() => {
-    const a = predioAtivo?.andares ?? []
+    const a = predioAtivo?.andares ?? []   // análise usa TODOS os andares
     const top = (arr, n) => arr.slice(0, n)
     const maxRev = Math.max(1, ...a.map(x => x.stats.revisar))
     const maxNovo = Math.max(1, ...a.map(x => x.stats.novo))
@@ -352,38 +346,7 @@ function PainelAnalitico({ predios, predioAtivo, onSelecionarPredio, onAbrirAnda
             </button>
           ))}
         </div>
-
-        {/* <div className="flex items-end justify-between">
-          <div className="min-w-0">
-            <div className="text-[10px] uppercase tracking-widest text-white/35">Pasta · análise</div>
-            <h2 className="truncate text-lg font-semibold leading-tight text-white">{predioAtivo.nome}</h2>
-            <p className="mt-0.5 text-[11px] text-white/40">{predioAtivo.andares.length} arquivos · {s.total} flashcards</p>
-          </div>
-          <div className="shrink-0 text-right">
-            <div className="text-2xl font-bold tabular-nums text-white">{s.pct}%</div>
-            <div className="text-[10px] uppercase tracking-wide text-white/35">dominado</div>
-          </div>
-        </div>
-
-        <div className="mt-3"><BarraStatus stats={s} /></div>
-        <div className="mt-2 grid grid-cols-4 gap-1">
-          {ORDEM_STATUS.map(k => (
-            <div key={k} className="rounded bg-white/[0.04] px-1.5 py-1">
-              <div className="flex items-center gap-1 text-[9px] uppercase tracking-wide text-white/45">
-                <span className="h-1.5 w-1.5 rounded-[2px]" style={{ background: STATUS[k].cor }} />
-                {STATUS[k].label}
-              </div>
-              <div className="text-sm font-semibold tabular-nums text-white">{s[k]}</div>
-            </div>
-          ))}
-        </div> */}
       </div>
-
-      {/* <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
-        <RankList titulo="Prioridade de revisão" cor="#F27405" itens={prioridade} onAbrir={onAbrirAndar} />
-        <RankList titulo="Ainda não iniciados" cor="#A67BF5" itens={comecar} onAbrir={onAbrirAndar} />
-        <RankList titulo="Mais fortes" cor="#6411D9" itens={fortes} onAbrir={onAbrirAndar} />
-      </div> */}
 
       <div className="shrink-0 border-t border-[#6411D9]/25 p-4">
         {apartamentoSelecionado ? (
@@ -412,12 +375,12 @@ export default function Central() {
   const [moveMode, setMoveMode] = useState(false)
   const [hoveredKey, setHoveredKey] = useState(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
   const arquivosMap = useNotownStore((s) => s.arquivosMap)
-    const diretorio = useNotownStore((s) => s.diretorio)
-    const setArquivosMap = useNotownStore((s) => s.setArquivosMap)
+  const diretorio = useNotownStore((s) => s.diretorio)
+  const setArquivosMap = useNotownStore((s) => s.setArquivosMap)
   const diretorioSelecionado = diretorio.diretorioSelecionado
-
-
+console.log(arquivosMap)
   const SIDEBAR_W = useSidebarWidth()
   const larguraMapa = isSidebarOpen ? `calc(100% - ${SIDEBAR_W}px)` : '100%'
 
@@ -427,26 +390,26 @@ export default function Central() {
   const handleDiretorioSelecionado = useCallback((map) => {
     setArquivosMap(map)
     console.log("Arquivos carregados:", map.size)
-  }, [])
+  }, [setArquivosMap])
 
   // ─── Prédios: do diretório real, ou fallback fake ───
   const predios = useMemo(() => {
     if (!arquivosMap || arquivosMap.size === 0) {
       return [
-        gerarPredioFake({ nome: 'Node', andares: 17 }),
+        gerarPredioFake({ nome: 'Node',       andares: 17 }),
         gerarPredioFake({ nome: 'Javascript', andares: 14 }),
-        gerarPredioFake({ nome: 'Tailwind', andares: 12 }),
-        gerarPredioFake({ nome: 'Java', andares: 15 }),
-        gerarPredioFake({ nome: 'NextJs', andares: 11 }),
-        gerarPredioFake({ nome: 'NestJs', andares: 12 }),
+        gerarPredioFake({ nome: 'Tailwind',   andares: 12 }),
+        gerarPredioFake({ nome: 'Java',       andares: 15 }),
+        gerarPredioFake({ nome: 'NextJs',     andares: 11 }),
+        gerarPredioFake({ nome: 'NestJs',     andares: 12 }),
         gerarPredioFake({ nome: 'Typescript', andares: 5 }),
-        gerarPredioFake({ nome: 'TreeJs', andares: 7 }),
-        gerarPredioFake({ nome: 'Zuntand', andares: 12 }),
-        gerarPredioFake({ nome: 'MongoDb', andares: 4 }),
-        gerarPredioFake({ nome: 'MySql', andares: 1 }),
-        gerarPredioFake({ nome: 'Postgress', andares: 2 }),
-        gerarPredioFake({ nome: 'Github', andares: 5 }),
-        gerarPredioFake({ nome: 'RAG  ', andares: 13 }),
+        gerarPredioFake({ nome: 'TreeJs',     andares: 7 }),
+        gerarPredioFake({ nome: 'Zustand',    andares: 12 }),
+        gerarPredioFake({ nome: 'MongoDb',    andares: 4 }),
+        gerarPredioFake({ nome: 'MySql',      andares: 1 }),
+        gerarPredioFake({ nome: 'Postgres',   andares: 2 }),
+        gerarPredioFake({ nome: 'Github',     andares: 5 }),
+        gerarPredioFake({ nome: 'RAG',        andares: 13 }),
       ]
     }
 
@@ -514,13 +477,14 @@ export default function Central() {
     setApartamentoSelecionadoId(null)
   }, [])
 
-  // ─── Edifícios no mapa ───
+  // ─── Edifícios no mapa 3D (usa LIMITADOS) ───
   const edificiosAtivos = useMemo(() => {
     const lista = predios.map((p) => ({
       id: p.id,
       nome: p.nome,
       setor: 'tecnologia',
-      quantidade: p.andares.length,   // 🔥 passa a quantidade de arquivos
+      quantidade: p.andaresLimitados?.length ?? p.andares.length,   // 🔥 3D respeita o teto
+      excedentes: p.excedentes ?? 0,
     }))
     console.log('🏢 edificiosAtivos:', lista)
     return lista
@@ -722,11 +686,6 @@ export default function Central() {
 
   return (
     <div className="h-full w-full rounded-2xl flex overflow-hidden bg-neutral-950">
-
-
-
-
-
       <motion.div
         animate={{ width: larguraMapa }}
         initial={false}
@@ -739,8 +698,7 @@ export default function Central() {
           posicoes={posicoes}
           satelites={satelites}
           tilesToRender={tilesToRender}
-          hexMap={hexMap}
-          edificioPorId={edificioPorId}
+          hexMap={hexMap}          edificioPorId={edificioPorId}
           selectedKey={selectedKey}
           moveMode={moveMode}
           hoveredKey={hoveredKey}
@@ -809,8 +767,6 @@ export default function Central() {
           </div>
         </div>
       </motion.aside>
-
     </div>
-    
   )
 }
