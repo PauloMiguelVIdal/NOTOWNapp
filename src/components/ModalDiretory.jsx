@@ -95,10 +95,10 @@ export default function ModalDirectory({ onClose, onSelect }) {
       onClick={onClose}
     >
       <div
-        className="flex justify-between h-[70vh] w-[70vw] max-w-[900px] flex-col gap-4 overflow-hidden rounded-lg bg-[#350973] p-6 text-white"
+        className="flex justify-between h-[70vh] w-[70vw] max-w-[900px] flex-col gap-4 overflow-hidden rounded-lg bg-[#350973] p-6 text-white z-[99999]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between z-[10000]">
           <h2 className="text-lg font-semibold">Selecionar diretório</h2>
           <button
             onClick={onClose}
@@ -161,7 +161,7 @@ export default function ModalDirectory({ onClose, onSelect }) {
           </div>
         )}
 
-        <div className="flex justify-end gap-2 border-t border-white/10 pt-3">
+        <div className="flex justify-end gap-2  border-t border-white/10 pt-3">
           <button
             onClick={onClose}
             className="rounded-md bg-white/10 px-4 py-2 hover:bg-white/20"

@@ -262,12 +262,12 @@ const HexTile = React.memo(({
 
 }) => {
 
- const ALTURA_POR_ANDAR = 0.3
-const BASE_HEX = 0.22 
-const MARGEM = 0.3
-const andares = building?.quantidade ?? 0
-const alturaEstimada = andares * ALTURA_POR_ANDAR
-const yPlaca = BASE_HEX + alturaEstimada + MARGEM
+  const ALTURA_POR_ANDAR = 0.3
+  const BASE_HEX = 0.22
+  const MARGEM = 0.3
+  const andares = building?.quantidade ?? 0
+  const alturaEstimada = andares * ALTURA_POR_ANDAR
+  const yPlaca = BASE_HEX + alturaEstimada + MARGEM
 
 
 
@@ -331,8 +331,8 @@ const yPlaca = BASE_HEX + alturaEstimada + MARGEM
           <BuildingModel
             nomeEdificio={null}
             andares={building.quantidade}
-            quantidadeArquivos={building.quantidade}  
- 
+            quantidadeArquivos={building.quantidade}
+
 
             corFallback={SETOR_CONFIG[building.setor]?.cor4 || '#888888'}
             posicaoBase={[0, 0.22, 0]}
@@ -341,23 +341,23 @@ const yPlaca = BASE_HEX + alturaEstimada + MARGEM
           />
           <Html position={[0, yPlaca, 0]} center distanceFactor={8}>
 
-                                    {excedentes > 0 && (
-                <div style={{
-                  background: 'linear-gradient(135deg, rgba(242,116,5,0.95), rgba(175,78,0,0.95))',
-                  border: '1.5px solid #F27405',
-                  borderRadius: 8,
-                  padding: '2px 8px',
-                  fontFamily: "'Rajdhani',sans-serif",
-                  fontWeight: 800,
-                  fontSize: 12,
-                  color: '#fff',
-                  textTransform: 'uppercase',
-                  whiteSpace: 'nowrap',
-                  boxShadow: '0 0 12px rgba(242,116,5,0.6)',
-                }}>
-                  +{excedentes} acima
-                </div>
-              )}
+            {excedentes > 0 && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(242,116,5,0.95), rgba(175,78,0,0.95))',
+                border: '1.5px solid #F27405',
+                borderRadius: 8,
+                padding: '2px 8px',
+                fontFamily: "'Rajdhani',sans-serif",
+                fontWeight: 800,
+                fontSize: 12,
+                color: '#fff',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 0 12px rgba(242,116,5,0.6)',
+              }}>
+                +{excedentes} acima
+              </div>
+            )}
 
             <div style={{
               background: 'linear-gradient(135deg, rgba(76,20,169,0.95), rgba(30,8,80,0.95))',
@@ -373,7 +373,7 @@ const yPlaca = BASE_HEX + alturaEstimada + MARGEM
 
             </div>
           </Html>
-   
+
         </>
       )}
 
@@ -397,7 +397,7 @@ const yPlaca = BASE_HEX + alturaEstimada + MARGEM
 // ─────────────────────────────────────────────────────────────
 //  CAMADA 4: SEDE
 // ─────────────────────────────────────────────────────────────
-const Sede = React.memo(({ nomeEmpresa, porte=['Mega Holding'], config = {} }) => {
+const Sede = React.memo(({ nomeEmpresa, porte = ['Mega Holding'], config = {} }) => {
   const sedeConfig = useMemo(() => resolverModeloSede(porte), [porte])
 
   return (
