@@ -110,6 +110,11 @@ export default function LandingPage() {
 
                 <img className="relative right-2" src={logo} />
             </div>
+            <a href="https://github.com/PauloMiguelVIdal/NOTOWNapp" target="_blank" className="fixed rounded-xl flex justify-center items-center bg-gradient-to-b from-[#6411D9]/20 to-white/20 bottom-0 w-full h-[40px]">
+
+                <img className="relative right-2 w-[30px] h-[30px] opacity-40" src={github} />
+                <p>Apoie esse projeto dando estrela no repositório ⭐</p>
+            </a>
         </div>
     )
 }
